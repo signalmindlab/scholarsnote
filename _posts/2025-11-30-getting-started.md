@@ -1,7 +1,7 @@
 ---
 title: Getting Started with ScholarsNote
 description: Welcome to ScholarsNote! Learn how to navigate our platform and make the most of our resources for academic publishing success.
-date: 2025-11-30 10:00:00 +0600
+date: 2025-11-29 10:00:00 +0900
 categories: [Guide, Getting Started]
 tags: [welcome, tutorial, academic publishing]
 pin: true
