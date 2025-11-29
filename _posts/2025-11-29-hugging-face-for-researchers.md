@@ -5,6 +5,7 @@ date: 2025-11-29 10:00:00 +0900
 categories: [Resources, AI Tools]
 tags: [hugging face, ai, machine learning, research, bengali]
 pin: false
+author: Scholarsnote
 ---
 
 গবেষণা শুরু করবেন কিন্তু কোথা থেকে শুরু করবেন বুঝতে পারছেন না?
