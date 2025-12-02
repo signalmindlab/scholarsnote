@@ -16,7 +16,7 @@ timezone: Asia/Seoul
 
 title: ScholarsNote # the main title
 
-tagline: Your guide to scholarly publishing # it will display as the subtitle
+tagline: Your guide to scholarly publishing, run by **Prof. Md Abdus Samad**, Yeungnam University, S. Korea # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
  A supportive space for researchers, academics, and students navigating scholarly publishing.
