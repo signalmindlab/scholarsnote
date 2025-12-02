@@ -14,7 +14,7 @@ timezone: Asia/Seoul
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: ScholarsNote # the main title
+title: ScholarsNote # the main title 
 
 # tagline: Your guide to scholarly publishing, run by **Prof. Md Abdus Samad**, Yeungnam University, S. Korea # it will display as the subtitle
 tagline: Run by <strong>Prof. Md Abdus Samad</strong>, Yeungnam University
