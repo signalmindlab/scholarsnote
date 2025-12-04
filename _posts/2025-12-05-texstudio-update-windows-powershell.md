@@ -1,7 +1,7 @@
 ---
 title: উইন্ডোজে PowerShell দিয়ে TeXstudio আপডেট করার সম্পূর্ণ গাইড
 description: উইন্ডোজে Winget কমান্ড ব্যবহার করে কীভাবে খুব সহজে এবং দ্রুত TeXstudio সফটওয়্যার আপডেট করবেন তার ধাপে ধাপে বিস্তারিত নির্দেশনা।
-date: 2024-12-04 10:00:00 +0900
+date: 2025-12-04 10:00:00 +0900
 categories: [Tutorial, LaTeX]
 tags: [texstudio, windows, powershell, winget, latex, update]
 pin: false
