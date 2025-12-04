@@ -1,5 +1,5 @@
 ---
-title: "wlscirep ক্লাসে \\nameref সমস্যার সমাধান: Unnumbered Sections-এ কাজ করানোর উপায়"
+title: "LaTeX wlscirep class ব্যবহার করলে \\nameref সমস্যার সমাধান: Unnumbered Sections-এ কাজ করানোর উপায়"
 description: "Scientific Reports আর্টিকেলের জন্য ব্যবহৃত wlscirep LaTeX ক্লাসে \\nameref কমান্ড unnumbered sections-এ কাজ না করার সমস্যা এবং তার সমাধান।"
 date: 2025-12-04 10:00:00 +0900
 categories: [LaTeX, Tips]
