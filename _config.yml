@@ -16,6 +16,7 @@ timezone: Asia/Seoul
 
 title: ScholarsNote # the main title 
 
+
 # tagline: Your guide to scholarly publishing, run by **Prof. Md Abdus Samad**, Yeungnam University, S. Korea # it will display as the subtitle
 tagline: Run by <strong>Prof. Md Abdus Samad</strong>, Yeungnam University
 
@@ -61,7 +62,7 @@ webmaster_verifications:
 # Web Analytics Settings
 analytics:
   google:
-    id: # fill in your Google Analytics ID
+    id: G-NSQNGHXBDQ # fill in your Google Analytics ID
   goatcounter:
     id: # fill in your GoatCounter ID
   umami:
