@@ -1,6 +1,6 @@
 ---
 title: "Complete Guide to LaTeX Label Prefixes and Naming Conventions"
-date: 2026-01-02
+date: 2026-01-03
 author: "ScholarNote"
 categories: [LaTeX, Academic Writing, Best Practices]
 tags: [latex, labels, references, cross-referencing, documentation]
