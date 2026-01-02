@@ -911,14 +911,6 @@ Please share your feedback or contribute to the project.
 
 ---
 
-## Related Resources
-
-- [LaTeX Reference Checker (Interactive)](https://scholarsnote.org/latex-reference-checker/) - Web-based version
-- [BibTeX Validator](https://scholarsnote.org/bibtex-validator/) - Check bibliography formatting
-- [LaTeX Best Practices Guide](https://scholarsnote.org/latex-best-practices/)
-
----
-
 ## License
 
 MIT License - Free to use, modify, and distribute.
