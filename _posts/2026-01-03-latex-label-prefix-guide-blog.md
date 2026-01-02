@@ -746,7 +746,7 @@ echo "Sections: $(grep -o '\\label{sec:[^}]*}' *.tex | wc -l)"
 echo "Theorems: $(grep -o '\\label{thm:[^}]*}' *.tex | wc -l)"
 ```
 
-For comprehensive reference checking, see our companion post: [Finding Unreferenced Tables, Figures, and Equations in LaTeX]([https://scholarnote.org](https://www.scholarsnote.org/posts/latex-reference-checker-blog/).
+For comprehensive reference checking, see our companion post: [Finding Unreferenced Tables, Figures, and Equations in LaTeX](https://www.scholarsnote.org/posts/latex-reference-checker-blog/).
 
 ## Real-world Example
 
