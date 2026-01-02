@@ -851,7 +851,6 @@ Following consistent label prefix conventions:
 - [LaTeX Wikibooks - Labels and Cross-referencing](https://en.wikibooks.org/wiki/LaTeX/Labels_and_Cross-referencing)
 - [CTAN - hyperref package](https://ctan.org/pkg/hyperref)
 - [CTAN - cleveref package](https://ctan.org/pkg/cleveref)
-- [Our LaTeX Reference Checker Tool](https://scholarnote.org)
 
 ---
 
