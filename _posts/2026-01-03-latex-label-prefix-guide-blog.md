@@ -1,838 +1,189 @@
 ---
-title: "Complete Guide to LaTeX Label Prefixes and Naming Conventions"
+title: "LaTeX Reference Checker: Bash Script to Find Unused Labels and Missing Citations"
 date: 2026-01-03
 author: "ScholarNote"
-categories: [LaTeX, Academic Writing, Best Practices]
-tags: [latex, labels, references, cross-referencing, documentation]
-description: "A comprehensive guide to LaTeX label prefixes for tables, figures, equations, theorems, and more. Learn the standard conventions used in academic writing."
+categories: [LaTeX, Tools, Research]
+tags: [latex, bash, academic-writing, productivity, script]
+description: "A robust bash script that audits LaTeX documents to find unreferenced figures, tables, equations, and citation issues while ignoring commented code"
+featured: true
 ---
 
-## Introduction
+## Overview
 
-One of LaTeX's most powerful features is its automatic cross-referencing system. You create a `\label{}` for an element and reference it anywhere with `\ref{}` or `\autoref{}`. But as your document grows, managing hundreds of labels becomes challenging without a consistent naming system.
+When preparing research manuscripts, it's common to accumulate unused labels, orphaned citations, and commented-out content. This bash script provides a comprehensive audit of your LaTeX document, identifying:
 
-This guide presents the **standard label prefix conventions** used across academic LaTeX documents. Following these conventions makes your documents more maintainable, especially in collaborative projects.
+- Unreferenced figures, tables, and equations
+- Unused bibliography entries
+- Missing citations (cited but not in .bib file)
+- All while properly ignoring commented lines
 
-## Why Use Label Prefixes?
+**Key Feature:** The script preserves the sequence in which labels appear in your document, making it easier to locate and manage them.
 
-**Without prefixes:**
-```latex
-\label{results}
-\label{methodology}
-\label{important}
-```
-Which one is the table? Which is the section? You can't tell without looking at the source.
+---
 
-**With prefixes:**
-```latex
-\label{tab:results}
-\label{sec:methodology}
-\label{fig:important}
-```
-Now it's immediately clear what each label refers to!
+## The Problem
 
-## Benefits of Consistent Labeling
+During manuscript development, you might encounter:
 
-✅ **Instant recognition** - Know the element type at a glance  
-✅ **Avoid conflicts** - `fig:results` and `tab:results` can coexist  
-✅ **Better searching** - Find all figure labels with one grep command  
-✅ **Team collaboration** - Everyone follows the same system  
-✅ **Automated checking** - Scripts can verify reference completeness  
-✅ **Editor support** - Autocomplete works better with prefixes  
+| Issue | Example | Impact |
+|-------|---------|--------|
+| Unreferenced labels | `\label{fig:old_analysis}` never used | Clutters document, confuses reviewers |
+| Commented labels counted | `% \label{tab:removed}` still detected | False positives in checks |
+| Missing citations | `\cite{smith2023}` but not in .bib | Compilation errors |
+| Unused bibliography | References added but never cited | Inflates reference count |
 
-## Standard Floats and Tables
+Manual checking across 50+ pages with multiple revisions becomes impractical.
 
-### Tables
+---
 
-**Prefix:** `tab:`
+## The Solution
 
-```latex
-\begin{table}[htbp]
-\centering
-\caption{Performance comparison across methods}
-\label{tab:performance_comparison}
-\begin{tabular}{lcc}
-...
-\end{tabular}
-\end{table}
+### Features
 
-Reference in text: As shown in Table~\ref{tab:performance_comparison}...
-% Or with autoref: As shown in \autoref{tab:performance_comparison}...
-```
+✅ **Comment-aware**: Ignores both full-line and inline comments  
+✅ **Sequence-preserving**: Shows labels in document order  
+✅ **Comprehensive**: Checks figures, tables, equations, and citations  
+✅ **Multiple reference styles**: Supports `\ref`, `\autoref`, and `\eqref`  
+✅ **Lightweight**: Pure bash, no dependencies  
+✅ **Fast**: Processes typical manuscripts in <1 second  
 
-**Naming tips:**
-- Use descriptive names: `tab:accuracy_results` not `tab:table1`
-- Separate words with underscores: `tab:model_comparison`
-- Be specific: `tab:training_accuracy` vs just `tab:accuracy`
+---
 
-### Figures
+## Installation and Usage
 
-**Prefix:** `fig:`
+### Step 1: Create the Script
 
-```latex
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.8\textwidth]{architecture.pdf}
-\caption{System architecture overview}
-\label{fig:system_architecture}
-\end{figure}
-
-Reference: \autoref{fig:system_architecture} shows the overall design.
-```
-
-**Common figure labels:**
-- `fig:architecture` - System diagrams
-- `fig:workflow` - Process flows
-- `fig:results_plot` - Data visualizations
-- `fig:screenshot_interface` - UI screenshots
-
-### Algorithms
-
-**Prefix:** `alg:`
-
-**Packages:** algorithm2e, algorithmic, algorithm
-
-```latex
-\begin{algorithm}[htbp]
-\caption{Gradient Descent Optimization}
-\label{alg:gradient_descent}
-\begin{algorithmic}[1]
-\State Initialize $\theta \gets 0$
-\For{$i = 1$ to $n$}
-    \State $\theta \gets \theta - \alpha \nabla J(\theta)$
-\EndFor
-\end{algorithmic}
-\end{algorithm}
-
-Reference: \autoref{alg:gradient_descent} presents our optimization approach.
-```
-
-### Code Listings
-
-**Prefix:** `lst:`
-
-**Package:** listings
-
-```latex
-\begin{lstlisting}[
-    language=Python,
-    caption={Data preprocessing pipeline},
-    label=lst:preprocessing
-]
-def preprocess(data):
-    data = normalize(data)
-    return data
-\end{lstlisting}
-
-Reference: The implementation in \autoref{lst:preprocessing} shows...
-```
-
-**Alternative listings package (minted):**
-```latex
-\begin{listing}[htbp]
-\begin{minted}{python}
-def hello():
-    print("Hello, World!")
-\end{minted}
-\caption{Hello world example}
-\label{lst:hello_world}
-\end{listing}
-```
-
-## Document Structure
-
-### Sections
-
-**Prefix:** `sec:`
-
-```latex
-\section{Introduction}
-\label{sec:introduction}
-
-The rest of this paper is organized as follows. 
-\autoref{sec:methodology} describes our approach...
-
-\section{Methodology}
-\label{sec:methodology}
-```
-
-**Best practices:**
-- Label main sections for cross-referencing
-- Use descriptive names matching section titles
-- Examples: `sec:related_work`, `sec:conclusion`, `sec:experiments`
-
-### Subsections
-
-**Prefixes:** `subsec:` or `ssec:`
-
-```latex
-\subsection{Data Collection}
-\label{subsec:data_collection}
-
-% Alternative shorter prefix
-\subsection{Experimental Setup}
-\label{ssec:experimental_setup}
-```
-
-Pick one convention and stick with it throughout your document!
-
-### Subsubsections
-
-**Prefix:** `sssec:`
-
-```latex
-\subsubsection{Hyperparameter Tuning}
-\label{sssec:hyperparameter_tuning}
-```
-
-**Note:** Subsubsections are less commonly referenced, so labels are optional.
-
-### Chapters (Books/Theses)
-
-**Prefix:** `chap:`
-
-```latex
-\chapter{Literature Review}
-\label{chap:literature_review}
-
-% In document class: book, report, memoir
-```
-
-### Appendices
-
-**Prefixes:** `app:` or `appx:`
-
-```latex
-\appendix
-
-\section{Supplementary Results}
-\label{app:supplementary_results}
-
-% Alternative
-\section{Proof of Theorem 1}
-\label{appx:proof_theorem1}
-```
-
-Both prefixes are widely used - choose one for consistency.
-
-## Equations
-
-**Prefix:** `eq:`
-
-```latex
-\begin{equation}
-E = mc^2
-\label{eq:mass_energy}
-\end{equation}
-
-% Reference with special \eqref (adds parentheses automatically)
-Einstein's famous equation \eqref{eq:mass_energy} states...
-
-% Regular reference
-Equation~\ref{eq:mass_energy} shows...
-```
-
-**Multiple equations:**
-```latex
-\begin{align}
-f(x) &= x^2 + 2x + 1 \label{eq:quadratic} \\
-g(x) &= \sin(x) + \cos(x) \label{eq:trigonometric}
-\end{align}
-```
-
-**Naming tips:**
-- Describe the equation: `eq:loss_function`, `eq:update_rule`
-- Include context: `eq:forward_pass`, `eq:backward_prop`
-- For numbered sets: `eq:system1`, `eq:system2`, `eq:system3`
-
-## Mathematical Environments (amsthm package)
-
-These require the `amsthm` package and environment definitions.
-
-### Theorems
-
-**Prefix:** `thm:`
-
-```latex
-\begin{theorem}[Convergence]
-\label{thm:convergence}
-Under assumptions A1-A3, the algorithm converges to the global optimum.
-\end{theorem}
-
-Reference: By \autoref{thm:convergence}, we know that...
-```
-
-### Lemmas
-
-**Prefix:** `lem:`
-
-```latex
-\begin{lemma}
-\label{lem:helper_bound}
-For all $x > 0$, we have $f(x) \leq g(x)$.
-\end{lemma}
-
-Reference: Using \autoref{lem:helper_bound}, we can show...
-```
-
-### Propositions
-
-**Prefix:** `prop:`
-
-```latex
-\begin{proposition}
-\label{prop:uniqueness}
-The solution is unique.
-\end{proposition}
-```
-
-### Corollaries
-
-**Prefix:** `cor:`
-
-```latex
-\begin{corollary}
-\label{cor:special_case}
-When $n=2$, the result simplifies to $O(n)$.
-\end{corollary}
-
-Reference: \autoref{cor:special_case} shows that...
-```
-
-### Definitions
-
-**Prefix:** `def:`
-
-```latex
-\begin{definition}[Feature Space]
-\label{def:feature_space}
-A \emph{feature space} is a vector space where each dimension represents 
-a specific feature of the data.
-\end{definition}
-
-Reference: According to \autoref{def:feature_space}...
-```
-
-### Remarks
-
-**Prefix:** `rem:`
-
-```latex
-\begin{remark}
-\label{rem:computational_note}
-The computational complexity can be reduced using dynamic programming.
-\end{remark}
-```
-
-### Examples
-
-**Prefix:** `ex:`
-
-```latex
-\begin{example}
-\label{ex:linear_regression}
-Consider a simple linear regression problem with one predictor variable...
-\end{example}
-
-Reference: \autoref{ex:linear_regression} illustrates this concept.
-```
-
-## Specialized Mathematical Elements
-
-### Assumptions/Hypotheses
-
-**Prefix:** `hyp:` or `assum:`
-
-```latex
-\begin{assumption}
-\label{hyp:normality}
-The error terms are normally distributed with mean zero.
-\end{assumption}
-
-% Alternative
-\begin{hypothesis}
-\label{assum:independence}
-Observations are independent and identically distributed.
-\end{hypothesis}
-```
-
-### Conjectures
-
-**Prefix:** `conj:`
-
-```latex
-\begin{conjecture}[Riemann Hypothesis]
-\label{conj:riemann}
-All non-trivial zeros of the Riemann zeta function have real part 1/2.
-\end{conjecture}
-```
-
-### Claims
-
-**Prefix:** `claim:`
-
-```latex
-\begin{claim}
-\label{claim:bounds_tight}
-The bounds derived in Theorem~\ref{thm:main} are tight.
-\end{claim}
-```
-
-### Notations
-
-**Prefix:** `nota:`
-
-```latex
-\begin{notation}
-\label{nota:symbols}
-We use $\mathbb{R}$ for real numbers, $\mathbb{N}$ for natural numbers, 
-and $\mathcal{X}$ for the input space.
-\end{notation}
-```
-
-## List Items and Special Elements
-
-### Enumerate Items
-
-**Prefix:** `item:`
-
-```latex
-\begin{enumerate}
-\item First contribution: Novel architecture \label{item:contrib1}
-\item Second contribution: Efficient training \label{item:contrib2}
-\item Third contribution: State-of-the-art results \label{item:contrib3}
-\end{enumerate}
-
-Our main contributions are items \ref{item:contrib1} and \ref{item:contrib2}.
-```
-
-**When to label items:**
-- When you reference them later in the text
-- For numbered requirements or conditions
-- In multi-part proofs or derivations
-
-### Algorithm Lines
-
-**Prefix:** `line:`
-
-```latex
-\begin{algorithmic}[1]
-\State Initialize parameters $\theta$ \label{line:init}
-\For{each epoch}
-    \State Compute gradient \label{line:gradient}
-    \State Update parameters \label{line:update}
-\EndFor
-\State Return $\theta$ \label{line:return}
-\end{algorithmic}
-
-In line~\ref{line:gradient}, we compute the gradient...
-```
-
-## Complete Prefix Reference Table
-
-| Prefix | Element Type | Package/Environment | Example |
-|--------|-------------|---------------------|---------|
-| `tab:` | Tables | Standard | `\label{tab:results}` |
-| `fig:` | Figures | Standard | `\label{fig:architecture}` |
-| `eq:` | Equations | Standard | `\label{eq:loss}` |
-| `alg:` | Algorithms | algorithm2e, algorithmic | `\label{alg:training}` |
-| `lst:` | Code listings | listings, minted | `\label{lst:code}` |
-| `sec:` | Sections | Standard | `\label{sec:intro}` |
-| `subsec:`, `ssec:` | Subsections | Standard | `\label{subsec:methods}` |
-| `sssec:` | Subsubsections | Standard | `\label{sssec:details}` |
-| `chap:` | Chapters | book, report | `\label{chap:background}` |
-| `app:`, `appx:` | Appendices | Standard | `\label{app:proofs}` |
-| `thm:` | Theorems | amsthm | `\label{thm:main}` |
-| `lem:` | Lemmas | amsthm | `\label{lem:helper}` |
-| `prop:` | Propositions | amsthm | `\label{prop:property}` |
-| `cor:` | Corollaries | amsthm | `\label{cor:result}` |
-| `def:` | Definitions | amsthm | `\label{def:term}` |
-| `rem:` | Remarks | amsthm | `\label{rem:note}` |
-| `ex:` | Examples | amsthm | `\label{ex:case}` |
-| `hyp:`, `assum:` | Assumptions | amsthm | `\label{hyp:normal}` |
-| `conj:` | Conjectures | amsthm | `\label{conj:hypothesis}` |
-| `claim:` | Claims | amsthm | `\label{claim:bounds}` |
-| `nota:` | Notations | amsthm | `\label{nota:symbols}` |
-| `item:` | List items | enumerate | `\label{item:first}` |
-| `line:` | Algorithm lines | algorithmic | `\label{line:init}` |
-
-## Best Practices for Label Names
-
-### DO ✅
-
-```latex
-\label{tab:performance_comparison}      % Descriptive
-\label{fig:neural_network_architecture} % Clear and specific
-\label{eq:cross_entropy_loss}          % Indicates content
-\label{sec:related_work}               % Matches section title
-\label{thm:convergence_rate}           % Describes theorem
-```
-
-### DON'T ❌
-
-```latex
-\label{table1}              % No prefix
-\label{fig:1}               % Not descriptive
-\label{important}           % Ambiguous type
-\label{sec:Section 2}       % Has spaces
-\label{eq:eq1}              % Redundant prefix
-\label{results-table}       % Use underscores, not hyphens
-```
-
-### Naming Guidelines
-
-1. **Always use prefixes** - Makes the type immediately clear
-2. **Be descriptive** - Future you will thank present you
-3. **Use underscores** - Not spaces, hyphens, or camelCase
-4. **Keep it concise** - But not cryptic (`perf_comp` vs `performance_comparison`)
-5. **Match content** - Label should hint at what the element shows
-6. **Be consistent** - Pick one style and stick to it
-7. **Lowercase** - Standard convention is all lowercase
-8. **No special characters** - Stick to alphanumeric and underscores
-
-### Multi-level Naming
-
-For related elements, use hierarchical naming:
-
-```latex
-\label{fig:experiment_setup}
-\label{fig:experiment_results_accuracy}
-\label{fig:experiment_results_loss}
-\label{fig:experiment_comparison}
-```
-
-Or for a series:
-
-```latex
-\label{tab:dataset_statistics}
-\label{tab:dataset_distribution}
-\label{tab:dataset_preprocessing}
-```
-
-## Working with Label Prefixes
-
-### Using autoref (hyperref package)
-
-The `\autoref` command automatically adds the element type:
-
-```latex
-\usepackage{hyperref}
-
-\autoref{tab:results}    % produces "Table 1"
-\autoref{fig:plot}       % produces "Figure 2"
-\autoref{eq:formula}     % produces "Equation 3"
-\autoref{sec:intro}      % produces "Section 1"
-```
-
-No need to type "Table" or "Figure" - `\autoref` does it automatically!
-
-### Using cleveref (even smarter)
-
-The `cleveref` package is even more powerful:
-
-```latex
-\usepackage{cleveref}
-
-\cref{tab:results}              % produces "table 1"
-\Cref{tab:results}              % produces "Table 1" (capitalized)
-\cref{eq:first,eq:second}       % produces "equations 1 and 2"
-\crefrange{fig:a}{fig:c}        % produces "figures 1 to 3"
-```
-
-**Customizing names:**
-```latex
-\crefname{equation}{eq.}{eqs.}
-\Crefname{equation}{Eq.}{Eqs.}
-```
-
-### Finding Labels with grep
-
-With consistent prefixes, finding labels is easy:
-
-```bash
-# Find all table labels
-grep -o '\\label{tab:[^}]*}' paper.tex
-
-# Find all theorem labels
-grep -o '\\label{thm:[^}]*}' paper.tex
-
-# Count figure labels
-grep -o '\\label{fig:[^}]*}' paper.tex | wc -l
-
-# List all equation labels
-grep -o '\\label{eq:[^}]*}' paper.tex | sed 's/.*{\(.*\)}/\1/'
-```
-
-## Multi-file Projects
-
-### Organizing large documents
-
-```latex
-% main.tex
-\documentclass{article}
-\begin{document}
-
-\include{chapters/introduction}    % Contains \label{sec:intro}
-\include{chapters/methodology}     % Contains \label{sec:methods}
-\include{chapters/results}         % Contains \label{sec:results}
-
-\end{document}
-```
-
-### Checking labels across files
-
-```bash
-# Find all labels in all files
-find . -name "*.tex" -exec grep -H '\\label{' {} \;
-
-# Count total figure labels in project
-cat *.tex chapters/*.tex | grep -o '\\label{fig:[^}]*}' | wc -l
-```
-
-### Namespace prefixes for multi-file projects
-
-For very large projects, add file prefixes:
-
-```latex
-% In introduction.tex
-\label{intro:sec:motivation}
-\label{intro:fig:overview}
-
-% In methods.tex
-\label{methods:sec:algorithm}
-\label{methods:alg:main}
-```
-
-This prevents label conflicts when combining files.
-
-## Package-specific Considerations
-
-### algorithm2e package
-
-```latex
-\begin{algorithm}
-\caption{My Algorithm}
-\label{alg:my_algorithm}
-...
-\end{algorithm}
-```
-
-### listings package
-
-```latex
-\lstinputlisting[
-    language=Python,
-    caption={Data loader},
-    label=lst:dataloader
-]{code/dataloader.py}
-```
-
-### subcaption package (subfigures)
-
-```latex
-\begin{figure}
-\centering
-\begin{subfigure}{0.45\textwidth}
-    \includegraphics{plot1.pdf}
-    \caption{Training loss}
-    \label{fig:subfig_training}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-    \includegraphics{plot2.pdf}
-    \caption{Validation loss}
-    \label{fig:subfig_validation}
-\end{subfigure}
-\caption{Loss curves during training}
-\label{fig:loss_curves}
-\end{figure}
-
-% Reference: \autoref{fig:loss_curves} shows...
-% Reference subfigure: \autoref{fig:subfig_training} shows training loss...
-```
-
-**Subfigure naming:**
-- Main figure: `fig:main_name`
-- Subfigures: `fig:subfig_description` or `fig:main_name_a`, `fig:main_name_b`
-
-## Common Pitfalls to Avoid
-
-### 1. No prefix
-```latex
-% BAD
-\label{results}
-```
-
-### 2. Duplicate labels
-```latex
-% BAD - Both labeled the same
-\label{tab:results}  % in Table 1
-...
-\label{tab:results}  % in Table 2 - CONFLICT!
-```
-
-LaTeX will give a warning: "Label multiply defined"
-
-### 3. Labels in wrong place
-
-```latex
-% BAD - label before caption in table
-\begin{table}
-\label{tab:results}  % TOO EARLY
-\caption{Results}
-...
-\end{table}
-
-% GOOD
-\begin{table}
-\caption{Results}
-\label{tab:results}  % After caption
-...
-\end{table}
-```
-
-### 4. Unreferenced labels
-
-Creating labels you never reference clutters your source. Use our [reference checking script](https://scholarnote.org) to find them!
-
-### 5. Space in labels
-
-```latex
-% BAD
-\label{fig:my figure}  % Spaces cause errors
-
-% GOOD
-\label{fig:my_figure}  % Use underscores
-```
-
-## Editor Support
-
-### VS Code (LaTeX Workshop)
-
-LaTeX Workshop provides:
-- Autocomplete for labels
-- "Go to definition" for references
-- Hover to preview labeled elements
-- Warning for undefined references
-
-### Overleaf
-
-Overleaf offers:
-- Real-time label suggestions
-- Click to jump to labeled element
-- Compilation warnings for issues
-
-### TeXstudio
-
-TeXstudio features:
-- Smart label completion
-- Reference checking
-- Label management panel
-
-All work better with consistent prefixes!
-
-## Automated Checking
-
-Check your labels systematically:
+Copy the following code and save it as `check_latex_refs.sh`:
 
 ```bash
 #!/bin/bash
-# check_labels.sh
 
-echo "=== Label Statistics ==="
-echo "Tables: $(grep -o '\\label{tab:[^}]*}' *.tex | wc -l)"
-echo "Figures: $(grep -o '\\label{fig:[^}]*}' *.tex | wc -l)"
-echo "Equations: $(grep -o '\\label{eq:[^}]*}' *.tex | wc -l)"
-echo "Sections: $(grep -o '\\label{sec:[^}]*}' *.tex | wc -l)"
-echo "Theorems: $(grep -o '\\label{thm:[^}]*}' *.tex | wc -l)"
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <latex_file.tex>"
+    exit 1
+fi
+
+TEXFILE=$1
+
+# Remove comments in two steps:
+# Step 1: Remove lines that start with % (including whitespace before %)
+# Step 2: Remove inline comments (everything after % that's not \%)
+TEXCONTENT=$(grep -v '^\s*%' "$TEXFILE" | sed 's/\([^\\]\)%.*$/\1/')
+
+echo "Checking references in: $TEXFILE"
+echo "========================================"
+
+# Tables (preserving order, excluding comments)
+echo -e "\n=== TABLES ==="
+TAB_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{tab:\K[^}]+')
+TAB_LABELS_UNIQ=$(echo "$TAB_LABELS" | awk '!seen[$0]++')
+# Catches both \ref and \autoref
+TAB_REFS=$(echo "$TEXCONTENT" | grep -oP '\\(auto)?ref\{tab:\K[^}]+' | awk '!seen[$0]++')
+TAB_COUNT=$(echo "$TAB_LABELS_UNIQ" | grep -v '^$' | wc -l)
+REF_COUNT=$(echo "$TAB_REFS" | grep -v '^$' | wc -l)
+
+echo "Total labels: $TAB_COUNT"
+echo "Total refs: $REF_COUNT"
+echo "Unreferenced tables:"
+
+while IFS= read -r label; do
+    if ! echo "$TAB_REFS" | grep -qx "$label"; then
+        echo "  tab:$label"
+    fi
+done <<< "$TAB_LABELS_UNIQ"
+
+# Figures (preserving order, excluding comments)
+echo -e "\n=== FIGURES ==="
+FIG_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{fig:\K[^}]+')
+FIG_LABELS_UNIQ=$(echo "$FIG_LABELS" | awk '!seen[$0]++')
+# Catches both \ref and \autoref
+FIG_REFS=$(echo "$TEXCONTENT" | grep -oP '\\(auto)?ref\{fig:\K[^}]+' | awk '!seen[$0]++')
+FIG_COUNT=$(echo "$FIG_LABELS_UNIQ" | grep -v '^$' | wc -l)
+FIGREF_COUNT=$(echo "$FIG_REFS" | grep -v '^$' | wc -l)
+
+echo "Total labels: $FIG_COUNT"
+echo "Total refs: $FIGREF_COUNT"
+echo "Unreferenced figures:"
+
+while IFS= read -r label; do
+    if ! echo "$FIG_REFS" | grep -qx "$label"; then
+        echo "  fig:$label"
+    fi
+done <<< "$FIG_LABELS_UNIQ"
+
+# Equations (preserving order, excluding comments)
+echo -e "\n=== EQUATIONS ==="
+EQ_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{eq:\K[^}]+')
+EQ_LABELS_UNIQ=$(echo "$EQ_LABELS" | awk '!seen[$0]++')
+# Catches \ref, \autoref, and \eqref
+EQ_REFS=$(echo "$TEXCONTENT" | grep -oP '\\((auto|eq))?ref\{eq:\K[^}]+' | awk '!seen[$0]++')
+EQ_COUNT=$(echo "$EQ_LABELS_UNIQ" | grep -v '^$' | wc -l)
+EQREF_COUNT=$(echo "$EQ_REFS" | grep -v '^$' | wc -l)
+
+echo "Total labels: $EQ_COUNT"
+echo "Total refs: $EQREF_COUNT"
+echo "Unreferenced equations:"
+
+while IFS= read -r label; do
+    if ! echo "$EQ_REFS" | grep -qx "$label"; then
+        echo "  eq:$label"
+    fi
+done <<< "$EQ_LABELS_UNIQ"
+
+# Citations (excluding comments)
+echo -e "\n=== CITATIONS ==="
+BIBFILE=$(echo "$TEXCONTENT" | grep -oP '\\bibliography\{\K[^}]+' | head -1)
+
+if [ -n "$BIBFILE" ]; then
+    [[ "$BIBFILE" != *.bib ]] && BIBFILE="${BIBFILE}.bib"
+    
+    if [ -f "$BIBFILE" ]; then
+        echo "Using bibliography file: $BIBFILE"
+        
+        BIB_ENTRIES=$(grep -oP '@\w+\{\K[^,]+' "$BIBFILE" | awk '!seen[$0]++')
+        CITATIONS=$(echo "$TEXCONTENT" | grep -oP '\\cite[tp]?\{\K[^}]+' | tr ',' '\n' | sed 's/^[[:space:]]*//' | awk '!seen[$0]++')
+        
+        BIB_COUNT=$(echo "$BIB_ENTRIES" | grep -v '^$' | wc -l)
+        CITE_TOTAL=$(echo "$TEXCONTENT" | grep -oP '\\cite[tp]?\{[^}]+\}' | wc -l)
+        CITE_UNIQ=$(echo "$CITATIONS" | grep -v '^$' | wc -l)
+        
+        echo "Total bib entries: $BIB_COUNT"
+        echo "Total citation commands: $CITE_TOTAL"
+        echo "Unique cited keys: $CITE_UNIQ"
+        
+        echo "Uncited bibliography entries:"
+        while IFS= read -r entry; do
+            if ! echo "$CITATIONS" | grep -qx "$entry"; then
+                echo "  $entry"
+            fi
+        done <<< "$BIB_ENTRIES"
+        
+        echo "Missing bibliography entries (cited but not in .bib):"
+        while IFS= read -r cite; do
+            if ! echo "$BIB_ENTRIES" | grep -qx "$cite"; then
+                echo "  $cite"
+            fi
+        done <<< "$CITATIONS"
+    else
+        echo "Bibliography file not found: $BIBFILE"
+    fi
+else
+    echo "No bibliography file found in document"
+fi
+
+echo -e "\n========================================"
+echo "Check complete!"
 ```
 
-For comprehensive reference checking, see our companion post: [Finding Unreferenced Tables, Figures, and Equations in LaTeX](https://www.scholarsnote.org/posts/latex-reference-checker-blog/).
+### Step 2: Make it Executable
 
-## Real-world Example
-
-Here's a complete example showing proper labeling:
-
-```latex
-\documentclass{article}
-\usepackage{amsmath,amsthm,graphicx,hyperref}
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-
-\begin{document}
-
-\section{Introduction}
-\label{sec:introduction}
-
-As shown in \autoref{sec:methodology}, our approach improves 
-upon existing methods. The main result is stated in 
-\autoref{thm:main_result}.
-
-\section{Methodology}
-\label{sec:methodology}
-
-We propose the loss function in \eqref{eq:loss_function}:
-
-\begin{equation}
-\mathcal{L} = \frac{1}{n}\sum_{i=1}^n \ell(y_i, \hat{y}_i)
-\label{eq:loss_function}
-\end{equation}
-
-\autoref{fig:architecture} illustrates the network structure.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.7\textwidth]{arch.pdf}
-\caption{Proposed neural network architecture}
-\label{fig:architecture}
-\end{figure}
-
-\section{Results}
-\label{sec:results}
-
-\autoref{tab:performance} summarizes our experimental results.
-
-\begin{table}[htbp]
-\centering
-\caption{Performance comparison on benchmark datasets}
-\label{tab:performance}
-\begin{tabular}{lcc}
-\hline
-Method & Accuracy & F1-Score \\
-\hline
-Baseline & 0.85 & 0.83 \\
-Ours & \textbf{0.92} & \textbf{0.90} \\
-\hline
-\end{tabular}
-\end{table}
-
-\section{Theoretical Analysis}
-\label{sec:theory}
-
-\begin{theorem}[Convergence]
-\label{thm:main_result}
-Under assumptions stated in \autoref{hyp:smoothness}, the algorithm 
-converges at rate $O(1/t)$.
-\end{theorem}
-
-\begin{proof}
-The proof follows from \autoref{lem:descent_property}.
-\end{proof}
-
-\begin{lemma}
-\label{lem:descent_property}
-Each iteration decreases the objective function.
-\end{lemma}
-
-\end{document}
+```bash
+chmod +x check_latex_refs.sh
 ```
 
-**Notice:**
-- Every label has an appropriate prefix
-- Labels are descriptive (not `tab:1`, `fig:1`)
-- References use `\autoref` for automatic type names
-- Labels placed correctly (after captions in floats)
+### Step 3: Run the Checker
 
+<<<<<<< HEAD
 ## Summary
 
 Following consistent label prefix conventions:
@@ -851,16 +202,786 @@ Following consistent label prefix conventions:
 - [LaTeX Wikibooks - Labels and Cross-referencing](https://en.wikibooks.org/wiki/LaTeX/Labels_and_Cross-referencing)
 - [CTAN - hyperref package](https://ctan.org/pkg/hyperref)
 - [CTAN - cleveref package](https://ctan.org/pkg/cleveref)
+=======
+```bash
+./check_latex_refs.sh manuscript.tex
+```
+>>>>>>> 9199eba (updated post 2016.01.03)
 
 ---
 
-**Found this guide helpful?** Follow us on [Facebook @scholarsnote](https://facebook.com/scholarsnote) for more LaTeX tips, academic writing guides, and research productivity tools!
+## Example Output
 
-**Have questions or suggestions?** Join the discussion on our [Facebook page](https://facebook.com/scholarsnote) or share your own LaTeX tips with the community.
+Here's what the script reports for a typical manuscript:
 
-**Related Posts:**
-- [Finding Unreferenced Tables, Figures, and Equations in LaTeX Documents](https://scholarnote.org)
-- [LaTeX Best Practices for Academic Writing](https://scholarnote.org)
-- [Automating Your LaTeX Workflow](https://scholarnote.org)
+```
+Checking references in: paper.tex
+========================================
 
-📘 **ScholarNote** - Making academic writing easier, one post at a time.
+=== TABLES ===
+Total labels: 11
+Total refs: 8
+Unreferenced tables:
+  tab:appendix_data
+  tab:extra_results
+  tab:summary_stats
+
+=== FIGURES ===
+Total labels: 6
+Total refs: 6
+Unreferenced figures:
+
+=== EQUATIONS ===
+Total labels: 15
+Total refs: 12
+Unreferenced equations:
+  eq:supplementary
+  eq:variance
+  eq:alt_form
+
+=== CITATIONS ===
+Using bibliography file: references.bib
+Total bib entries: 45
+Total citation commands: 52
+Unique cited keys: 38
+Uncited bibliography entries:
+  smith2020old
+  jones2019unused
+  brown2018extra
+Missing bibliography entries (cited but not in .bib):
+  nguyen2023missing
+
+========================================
+Check complete!
+```
+
+**Note:** The script detects references made with `\ref{fig:one}`, `\autoref{tab:results}`, or `\eqref{eq:main}` - all are counted correctly.
+
+---
+
+## Technical Deep Dive
+
+### How It Works
+
+#### 1. Comment Removal
+
+The script uses a two-step approach to handle comments:
+
+```bash
+# Step 1: Remove lines starting with %
+# Step 2: Remove inline comments but preserve \%
+TEXCONTENT=$(grep -v '^\s*%' "$TEXFILE" | sed 's/\([^\\]\)%.*$/\1/')
+```
+
+**Important:** The order matters! We must remove full-line comments **first**, then handle inline comments.
+
+**Test cases:**
+
+| LaTeX Code | Processed As |
+|------------|--------------|
+| `\label{fig:test}` | ✓ Included |
+| `% \label{fig:old}` | ✗ Excluded |
+| `Text \ref{fig:a} % comment` | ✓ `\ref{fig:a}` included |
+| `50\% efficiency` | ✓ `\%` preserved |
+
+#### 2. Sequence Preservation
+
+Uses `awk '!seen[$0]++'` to remove duplicates while maintaining order:
+
+```bash
+# Traditional approach (loses order)
+sort -u
+
+# Our approach (preserves order)
+awk '!seen[$0]++'
+```
+
+**Why this matters:**
+
+If your document has:
+```latex
+\section{Methods}        % Line 50
+\label{fig:workflow}     % Line 65
+
+\section{Results}        % Line 150
+\label{fig:accuracy}     % Line 170
+
+\section{Appendix}       % Line 300
+\label{fig:extra}        % Line 310 (unreferenced)
+```
+
+The output shows `fig:extra` in document order (not alphabetically sorted), making it easier to locate.
+
+#### 3. Pattern Matching
+
+Uses Perl-compatible regex with `grep -oP`:
+
+```bash
+# For tables and figures: catches both \ref and \autoref
+grep -oP '\\(auto)?ref\{tab:\K[^}]+'
+
+# For equations: catches \ref, \autoref, and \eqref
+grep -oP '\\((auto|eq))?ref\{eq:\K[^}]+'
+```
+
+**Breakdown:**
+- `\\(auto)?ref\{tab:` - Match `\ref{tab:` or `\autoref{tab:`
+- `\\((auto|eq))?ref\{eq:` - Match `\ref{eq:`, `\autoref{eq:`, or `\eqref{eq:`
+- `\K` - Discard everything matched so far
+- `[^}]+` - Capture everything until `}`
+
+**Supported reference commands:**
+- `\ref{...}` - Standard LaTeX reference
+- `\autoref{...}` - Automatic reference from hyperref package
+- `\eqref{...}` - Equation reference (for equations only)
+
+**Examples:**
+**Examples:**
+
+Labels detected:
+- `\label{tab:results}` → extracts `results`
+- `\label{fig:analysis_2023}` → extracts `analysis_2023`
+- `\label{eq:main_theorem}` → extracts `main_theorem`
+
+References detected:
+- `\ref{fig:diagram}` → matches `diagram`
+- `\autoref{tab:results}` → matches `results`
+- `\eqref{eq:einstein}` → matches `einstein`
+
+Not matched:
+- `% \label{tab:old}` (filtered by comment removal)
+- `\label{sec:intro}` (different prefix - use section extension)
+
+---
+
+## Advanced Usage
+
+### 1. Check Multiple Files
+
+Create `check_all.sh`:
+
+```bash
+#!/bin/bash
+
+for file in *.tex; do
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "File: $file"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    ./check_latex_refs.sh "$file"
+    echo ""
+done
+```
+
+### 2. Generate Timestamped Reports
+
+```bash
+# Create dated log
+./check_latex_refs.sh paper.tex > "audit_$(date +%Y%m%d_%H%M%S).log"
+
+# Compare before/after revision
+./check_latex_refs.sh paper.tex > before_revision.log
+# ... make changes ...
+./check_latex_refs.sh paper.tex > after_revision.log
+diff before_revision.log after_revision.log
+```
+
+### 3. Git Pre-commit Hook
+
+Add to `.git/hooks/pre-commit`:
+
+```bash
+#!/bin/bash
+
+# Run check
+./check_latex_refs.sh main.tex > ref_check.log
+
+# Count unreferenced items
+UNREFERENCED=$(grep -c "^  " ref_check.log)
+
+if [ $UNREFERENCED -gt 0 ]; then
+    echo "⚠️  Warning: $UNREFERENCED unreferenced items found"
+    cat ref_check.log
+    
+    read -p "Continue commit? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+```
+
+### 4. Makefile Integration
+
+```makefile
+# Makefile
+
+.PHONY: check clean all
+
+all: manuscript.pdf check
+
+manuscript.pdf: manuscript.tex
+	pdflatex manuscript.tex
+	bibtex manuscript
+	pdflatex manuscript.tex
+	pdflatex manuscript.tex
+
+check:
+	@./check_latex_refs.sh manuscript.tex
+
+clean:
+	rm -f *.aux *.log *.bbl *.blg *.out *.toc
+
+audit:
+	@./check_latex_refs.sh manuscript.tex > audit_$(shell date +%Y%m%d).log
+	@cat audit_$(shell date +%Y%m%d).log
+```
+
+**Usage:**
+```bash
+make              # Compile and check
+make check        # Run reference check only
+make audit        # Generate timestamped audit
+```
+
+### 5. Pre-submission Checklist Script
+
+Create `pre_submit.sh`:
+
+```bash
+#!/bin/bash
+
+echo "📋 Pre-submission Checklist"
+echo "═══════════════════════════"
+
+# 1. Reference check
+echo "1️⃣  Checking references..."
+./check_latex_refs.sh manuscript.tex > ref_audit.log
+
+# 2. Count issues
+ISSUES=$(grep -c "^  " ref_audit.log)
+if [ $ISSUES -eq 0 ]; then
+    echo "   ✓ No unreferenced items"
+else
+    echo "   ⚠️  $ISSUES unreferenced items found"
+    cat ref_audit.log
+fi
+
+# 3. Check compilation
+echo "2️⃣  Checking compilation..."
+pdflatex -interaction=nonstopmode manuscript.tex > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "   ✓ Compiles successfully"
+else
+    echo "   ✗ Compilation errors found"
+fi
+
+# 4. Check bibliography
+echo "3️⃣  Checking bibliography..."
+bibtex manuscript > /dev/null 2>&1
+echo "   ✓ Bibliography processed"
+
+echo "═══════════════════════════"
+echo "✅ Checklist complete!"
+```
+
+---
+
+## Extensions and Customizations
+
+### Add Line Numbers
+
+Modify the unreferenced item display to show line numbers:
+
+```bash
+while IFS= read -r label; do
+    if ! echo "$TAB_REFS" | grep -qx "$label"; then
+        LINE=$(grep -n "\\label{tab:$label}" "$TEXFILE" | cut -d: -f1)
+        echo "  tab:$label (line $LINE)"
+    fi
+done <<< "$TAB_LABELS_UNIQ"
+```
+
+**Output:**
+```
+Unreferenced tables:
+  tab:appendix_data (line 145)
+  tab:extra_results (line 203)
+```
+
+### Add Section Labels
+
+Add this after the equations section:
+
+```bash
+# Sections (preserving order, excluding comments)
+echo -e "\n=== SECTIONS ==="
+SEC_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{sec:\K[^}]+')
+SEC_LABELS_UNIQ=$(echo "$SEC_LABELS" | awk '!seen[$0]++')
+SEC_REFS=$(echo "$TEXCONTENT" | grep -oP '\\ref\{sec:\K[^}]+' | awk '!seen[$0]++')
+SEC_COUNT=$(echo "$SEC_LABELS_UNIQ" | grep -v '^$' | wc -l)
+SECREF_COUNT=$(echo "$SEC_REFS" | grep -v '^$' | wc -l)
+
+echo "Total section labels: $SEC_COUNT"
+echo "Total section refs: $SECREF_COUNT"
+echo "Unreferenced sections:"
+
+while IFS= read -r label; do
+    if ! echo "$SEC_REFS" | grep -qx "$label"; then
+        echo "  sec:$label"
+    fi
+done <<< "$SEC_LABELS_UNIQ"
+```
+
+### Color Output
+
+Add ANSI color codes for better visibility:
+
+```bash
+# Add at top of script (after shebang)
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Use in output
+echo -e "${BLUE}=== TABLES ===${NC}"
+echo "Total labels: $TAB_COUNT"
+echo "Total refs: $REF_COUNT"
+
+if [ "$TAB_COUNT" -eq "$REF_COUNT" ]; then
+    echo -e "${GREEN}✓ All tables referenced!${NC}"
+else
+    echo -e "${RED}Unreferenced tables:${NC}"
+    while IFS= read -r label; do
+        if ! echo "$TAB_REFS" | grep -qx "$label"; then
+            echo -e "  ${YELLOW}tab:$label${NC}"
+        fi
+    done <<< "$TAB_LABELS_UNIQ"
+fi
+```
+
+### Export to CSV
+
+Create a CSV export function:
+
+```bash
+#!/bin/bash
+# Export unreferenced items to CSV
+
+TEXFILE=$1
+OUTFILE="${TEXFILE%.tex}_unreferenced.csv"
+
+# Run the check and extract unreferenced items
+./check_latex_refs.sh "$TEXFILE" > /tmp/ref_check.log
+
+# Create CSV header
+echo "Type,Label,Section" > "$OUTFILE"
+
+# Extract and format
+grep "^  tab:" /tmp/ref_check.log | sed 's/^  /table,/' >> "$OUTFILE"
+grep "^  fig:" /tmp/ref_check.log | sed 's/^  /figure,/' >> "$OUTFILE"
+grep "^  eq:" /tmp/ref_check.log | sed 's/^  /equation,/' >> "$OUTFILE"
+
+echo "CSV exported to: $OUTFILE"
+```
+
+### JSON Output
+
+Add JSON export capability:
+
+```bash
+#!/bin/bash
+# Add --json flag support
+
+if [ "$2" == "--json" ]; then
+    # Extract data
+    TAB_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{tab:\K[^}]+' | awk '!seen[$0]++')
+    TAB_REFS=$(echo "$TEXCONTENT" | grep -oP '\\ref\{tab:\K[^}]+' | awk '!seen[$0]++')
+    
+    # Build unreferenced array
+    UNREF_TABS=$(comm -23 <(echo "$TAB_LABELS" | sort) <(echo "$TAB_REFS" | sort) | \
+        awk '{printf "\"%s\",", $0}' | sed 's/,$//')
+    
+    # Output JSON
+    cat << EOF
+{
+  "file": "$TEXFILE",
+  "timestamp": "$(date -Iseconds)",
+  "tables": {
+    "total_labels": $(echo "$TAB_LABELS" | grep -v '^$' | wc -l),
+    "total_refs": $(echo "$TAB_REFS" | grep -v '^$' | wc -l),
+    "unreferenced": [$UNREF_TABS]
+  }
+}
+EOF
+fi
+```
+
+---
+
+## Workflow Integration Examples
+
+### 1. Continuous Integration (CI)
+
+For GitHub Actions (`.github/workflows/latex-check.yml`):
+
+```yaml
+name: LaTeX Reference Check
+
+on: [push, pull_request]
+
+jobs:
+  check-refs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Run reference checker
+        run: |
+          chmod +x check_latex_refs.sh
+          ./check_latex_refs.sh manuscript.tex
+          
+      - name: Count issues
+        run: |
+          ISSUES=$(./check_latex_refs.sh manuscript.tex | grep "^  " | wc -l)
+          echo "Found $ISSUES unreferenced items"
+          if [ $ISSUES -gt 5 ]; then
+            echo "Too many unreferenced items!"
+            exit 1
+          fi
+```
+
+### 2. VS Code Task
+
+Add to `.vscode/tasks.json`:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Check LaTeX References",
+      "type": "shell",
+      "command": "./check_latex_refs.sh",
+      "args": ["${file}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ]
+}
+```
+
+### 3. Overleaf/Git Sync
+
+For projects synced between Overleaf and Git:
+
+```bash
+#!/bin/bash
+# sync_and_check.sh
+
+# Pull from Overleaf
+git pull origin master
+
+# Run check
+./check_latex_refs.sh main.tex > ref_check.log
+
+# If clean, push changes
+if [ $(grep -c "^  " ref_check.log) -eq 0 ]; then
+    git add .
+    git commit -m "Update: references checked"
+    git push origin master
+else
+    echo "⚠️  Unreferenced items found. Fix before pushing."
+    cat ref_check.log
+fi
+```
+
+---
+
+## Comparison with Alternatives
+
+| Tool | Pros | Cons | Best For |
+|------|------|------|----------|
+| **This script** | Fast, customizable, comment-aware, preserves order | Single file only | Quick audits, CI/CD |
+| `refcheck` package | LaTeX-integrated, visual markers | Must recompile, clutters PDF | During writing |
+| `chktex` | Comprehensive linting, many checks | Verbose, complex output | Deep analysis |
+| VS Code LaTeX Workshop | Real-time, editor-integrated | Editor-specific, no batch | Active editing |
+| Python scripts | Very flexible, HTML reports | Slower, requires Python | Custom workflows |
+
+---
+
+## Real-World Case Study
+
+### Initial State
+
+Manuscript for journal submission with 8 months of revisions:
+
+```
+=== TABLES ===
+Total labels: 8
+Total refs: 7
+Unreferenced tables:
+  tab:correlation_matrix
+
+=== FIGURES ===
+Total labels: 12
+Total refs: 12
+
+=== EQUATIONS ===
+Total labels: 6
+Total refs: 6
+
+=== CITATIONS ===
+Total bib entries: 67
+Uncited bibliography entries:
+  lecun2015deep
+  goodfellow2016deep
+  chollet2017deep
+  bishop2006pattern
+  murphy2012machine
+  hastie2009elements
+  james2013introduction
+  vapnik1995nature
+  cover2006elements
+```
+
+### Actions Taken
+
+1. **Moved** `tab:correlation_matrix` to supplementary materials
+2. **Removed** 9 unused deep learning references (leftover from earlier drafts)
+3. **Cleaned up** bibliography from 67 → 58 entries
+4. **Verified** all remaining citations were relevant
+
+### Final State
+
+```
+=== TABLES ===
+Total labels: 7
+Total refs: 7
+Unreferenced tables:
+
+=== CITATIONS ===
+Total bib entries: 58
+Uncited bibliography entries:
+```
+
+**Time saved:** ~30 minutes of manual checking  
+**Outcome:** Clean submission, no reviewer comments about references
+
+---
+
+## Limitations and Workarounds
+
+### Current Limitations
+
+1. **Single file only**: Doesn't traverse `\input{}` or `\include{}` commands
+2. **Standard prefixes**: Assumes `tab:`, `fig:`, `eq:`, `sec:` conventions
+3. **Reference commands**: Detects `\ref`, `\autoref`, and `\eqref` (for equations)
+4. **Citation commands**: Only detects `\cite`, `\citep`, `\citet`
+5. **Bibliography format**: Requires standard `\bibliography{}` command
+
+### Workarounds
+
+**For multi-file projects:**
+```bash
+# Combine files first
+cat main.tex chapter*.tex appendix.tex > combined.tex
+./check_latex_refs.sh combined.tex
+rm combined.tex
+```
+
+**For custom prefixes:**
+```bash
+# Modify the grep patterns in the script
+# Change tab: to tbl:
+grep -oP '\\label\{tbl:\K[^}]+'
+```
+
+**For additional citation commands:**
+```bash
+# Add to CITATIONS line:
+CITATIONS=$(echo "$TEXCONTENT" | grep -oP '\\cite(p|t|author|year|)?\{\K[^}]+' | ...)
+```
+
+**For biblatex:**
+```bash
+# Change BIBFILE detection:
+BIBFILE=$(echo "$TEXCONTENT" | grep -oP '\\addbibresource\{\K[^}]+' | head -1)
+```
+
+---
+
+## Troubleshooting
+
+### Issue: Script shows no output
+
+**Solution:**
+```bash
+# Check file exists and has content
+ls -la manuscript.tex
+wc -l manuscript.tex
+
+# Check for labels
+grep "\\label{" manuscript.tex | head -5
+
+# Run with debug mode
+bash -x check_latex_refs.sh manuscript.tex
+```
+
+### Issue: Bibliography not found
+
+**Solution:**
+```bash
+# Check bibliography command exists
+grep "bibliography" manuscript.tex
+
+# Verify .bib file location
+ls -la *.bib
+
+# Check file permissions
+ls -la references.bib
+```
+
+### Issue: Commented lines still appear
+
+**Solution:**
+```bash
+# Check sed version
+sed --version
+
+# Try alternative comment removal
+TEXCONTENT=$(grep -v '^\s*%' "$TEXFILE" | sed 's/[^\\]%.*$//')
+
+# Or use Perl
+TEXCONTENT=$(perl -pe 's/([^\\])%.*$/$1/' "$TEXFILE")
+```
+
+### Issue: Special characters in labels
+
+**Solution:**
+```bash
+# Escape special characters in grep
+grep -oP '\\label\{tab:\K[^}]+' | sed 's/[._-]//g'
+
+# Or use simpler pattern
+grep "\\label{tab:" | cut -d'{' -f2 | cut -d'}' -f1
+```
+
+### Issue: False positives
+
+**Solution:**
+```bash
+# Check if label actually exists in source
+grep -n "label{tab:problematic}" manuscript.tex
+
+# Verify it's not in a comment
+grep "tab:problematic" manuscript.tex | grep -v "^%"
+```
+
+---
+
+## Performance Optimization
+
+For very large documents (>10,000 lines):
+
+```bash
+# Use parallel processing for multiple files
+find . -name "*.tex" | parallel ./check_latex_refs.sh {}
+
+# Cache intermediate results
+TEXCONTENT=$(sed 's/\([^\\]\)%.*$/\1/' "$TEXFILE" | tee /tmp/cleaned.tex)
+
+# Use faster grep alternatives
+# Install ripgrep: sudo apt install ripgrep
+rg -oP '\\label\{tab:\K[^}]+' "$TEXFILE"
+```
+
+---
+
+## Contributing and Feedback
+
+This tool is open for improvements! If you:
+
+- Find bugs or edge cases
+- Have feature suggestions
+- Want to add support for other label types
+- Created useful extensions
+
+Please share your feedback or contribute to the project.
+
+---
+
+## Version History
+
+**v1.0 (2026-01-02)**
+- Initial release
+- Support for tables, figures, equations, citations
+- Comment filtering (inline and full-line)
+- Sequence-preserving output
+
+**Planned features:**
+- Support for `\input{}` and `\include{}`
+- Algorithm and listing labels
+- HTML output format
+- Configurable label prefixes
+- Multi-language support
+
+---
+
+## Related Resources
+
+- [LaTeX Reference Checker (Interactive)](https://scholarsnote.org/latex-reference-checker/) - Web-based version
+- [BibTeX Validator](https://scholarsnote.org/bibtex-validator/) - Check bibliography formatting
+- [LaTeX Best Practices Guide](https://scholarsnote.org/latex-best-practices/)
+
+---
+
+## License
+
+MIT License - Free to use, modify, and distribute.
+
+```
+MIT License
+
+Copyright (c) 2026 ScholarNote
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+```
+
+---
+
+## Citation
+
+If you use this tool in your research workflow:
+
+```bibtex
+@misc{latex_ref_checker_2026,
+  title={LaTeX Reference Checker: Bash Script for Document Auditing},
+  author={ScholarNote},
+  year={2026},
+  url={https://scholarsnote.org/latex-reference-checker-bash/},
+  note={Accessed: 2026-01-02}
+}
+```
+
+---
+
+**Last updated:** January 2, 2026  
+**Tested on:** Ubuntu 20.04+, macOS 12+, Git Bash (Windows)  
+**Script version:** 1.0  
+
+---
+
+*ScholarNote provides free tools and resources for academic researchers. Follow us for updates on new tools and LaTeX productivity tips.*
