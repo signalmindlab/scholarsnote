@@ -1,6 +1,6 @@
 ---
 title: "Git Commands Cheatsheet: Renaming Overleaf Projects"
-date: 2025-01-04
+date: 2026-01-04
 author: "Scholarsnote"
 categories: [Git, LaTeX, Overleaf]
 tags: [git-bash, overleaf, latex-workflow, quick-reference, productivity]
