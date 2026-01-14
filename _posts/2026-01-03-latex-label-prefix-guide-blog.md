@@ -51,9 +51,15 @@ Manual checking across 50+ pages with multiple revisions becomes impractical.
 
 ## Installation and Usage
 
+Follow these three simple steps to start using the reference checker:
+
+1. **Save the script** - Copy the code below and save it as `check_latex_refs.sh` in your LaTeX project directory
+2. **Make it executable** - Run `chmod +x check_latex_refs.sh` in your terminal
+3. **Run the checker** - Execute `./check_latex_refs.sh manuscript.tex` (replace with your filename)
+
 ### Step 1: Create the Script
 
-Copy the following code and save it as `check_latex_refs.sh`:
+Copy the following code and save it as `check_latex_refs.sh` in the same directory as your LaTeX file:
 
 ```bash
 #!/bin/bash
@@ -177,16 +183,16 @@ echo "Check complete!"
 
 ### Step 2: Make it Executable
 
+Open your terminal (Bash/CMD/PowerShell), navigate to your project directory, and run:
+
 ```bash
 chmod +x check_latex_refs.sh
 ```
 
+This command gives the script permission to run on your system.
+
 ### Step 3: Run the Checker
 
-=======
-```bash
-./check_latex_refs.sh manuscript.tex
-```
 
 ---
 
