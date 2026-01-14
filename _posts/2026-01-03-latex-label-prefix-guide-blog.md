@@ -183,30 +183,10 @@ chmod +x check_latex_refs.sh
 
 ### Step 3: Run the Checker
 
-<<<<<<< HEAD
-## Summary
-
-Following consistent label prefix conventions:
-
-✅ Makes your LaTeX source more readable  
-✅ Prevents label conflicts  
-✅ Enables automated checking  
-✅ Improves collaboration  
-✅ Works better with modern LaTeX editors  
-✅ Saves time in the long run  
-
-**Start using prefixes today!** Your future self (and collaborators) will thank you.
-
-## Additional Resources
-
-- [LaTeX Wikibooks - Labels and Cross-referencing](https://en.wikibooks.org/wiki/LaTeX/Labels_and_Cross-referencing)
-- [CTAN - hyperref package](https://ctan.org/pkg/hyperref)
-- [CTAN - cleveref package](https://ctan.org/pkg/cleveref)
 =======
 ```bash
 ./check_latex_refs.sh manuscript.tex
 ```
->>>>>>> 9199eba (updated post 2016.01.03)
 
 ---
 
