@@ -193,6 +193,13 @@ This command gives the script permission to run on your system.
 
 ### Step 3: Run the Checker
 
+Execute the script with your LaTeX file:
+
+```bash
+./check_latex_refs.sh manuscript.tex
+```
+
+Replace `manuscript.tex` with your actual LaTeX filename. The script will analyze your document and display a comprehensive report of all references.
 
 ---
 
@@ -242,101 +249,6 @@ Check complete!
 ```
 
 **Note:** The script detects references made with `\ref{fig:one}`, `\autoref{tab:results}`, or `\eqref{eq:main}` - all are counted correctly.
-
----
-
-## Technical Deep Dive
-
-### How It Works
-
-#### 1. Comment Removal
-
-The script uses a two-step approach to handle comments:
-
-```bash
-# Step 1: Remove lines starting with %
-# Step 2: Remove inline comments but preserve \%
-TEXCONTENT=$(grep -v '^\s*%' "$TEXFILE" | sed 's/\([^\\]\)%.*$/\1/')
-```
-
-**Important:** The order matters! We must remove full-line comments **first**, then handle inline comments.
-
-**Test cases:**
-
-| LaTeX Code | Processed As |
-|------------|--------------|
-| `\label{fig:test}` | ✓ Included |
-| `% \label{fig:old}` | ✗ Excluded |
-| `Text \ref{fig:a} % comment` | ✓ `\ref{fig:a}` included |
-| `50\% efficiency` | ✓ `\%` preserved |
-
-#### 2. Sequence Preservation
-
-Uses `awk '!seen[$0]++'` to remove duplicates while maintaining order:
-
-```bash
-# Traditional approach (loses order)
-sort -u
-
-# Our approach (preserves order)
-awk '!seen[$0]++'
-```
-
-**Why this matters:**
-
-If your document has:
-```latex
-\section{Methods}        % Line 50
-\label{fig:workflow}     % Line 65
-
-\section{Results}        % Line 150
-\label{fig:accuracy}     % Line 170
-
-\section{Appendix}       % Line 300
-\label{fig:extra}        % Line 310 (unreferenced)
-```
-
-The output shows `fig:extra` in document order (not alphabetically sorted), making it easier to locate.
-
-#### 3. Pattern Matching
-
-Uses Perl-compatible regex with `grep -oP`:
-
-```bash
-# For tables and figures: catches both \ref and \autoref
-grep -oP '\\(auto)?ref\{tab:\K[^}]+'
-
-# For equations: catches \ref, \autoref, and \eqref
-grep -oP '\\((auto|eq))?ref\{eq:\K[^}]+'
-```
-
-**Breakdown:**
-- `\\(auto)?ref\{tab:` - Match `\ref{tab:` or `\autoref{tab:`
-- `\\((auto|eq))?ref\{eq:` - Match `\ref{eq:`, `\autoref{eq:`, or `\eqref{eq:`
-- `\K` - Discard everything matched so far
-- `[^}]+` - Capture everything until `}`
-
-**Supported reference commands:**
-- `\ref{...}` - Standard LaTeX reference
-- `\autoref{...}` - Automatic reference from hyperref package
-- `\eqref{...}` - Equation reference (for equations only)
-
-**Examples:**
-**Examples:**
-
-Labels detected:
-- `\label{tab:results}` → extracts `results`
-- `\label{fig:analysis_2023}` → extracts `analysis_2023`
-- `\label{eq:main_theorem}` → extracts `main_theorem`
-
-References detected:
-- `\ref{fig:diagram}` → matches `diagram`
-- `\autoref{tab:results}` → matches `results`
-- `\eqref{eq:einstein}` → matches `einstein`
-
-Not matched:
-- `% \label{tab:old}` (filtered by comment removal)
-- `\label{sec:intro}` (different prefix - use section extension)
 
 ---
 
@@ -944,22 +856,6 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-```
-
----
-
-## Citation
-
-If you use this tool in your research workflow:
-
-```bibtex
-@misc{latex_ref_checker_2026,
-  title={LaTeX Reference Checker: Bash Script for Document Auditing},
-  author={ScholarNote},
-  year={2026},
-  url={https://scholarsnote.org/latex-reference-checker-bash/},
-  note={Accessed: 2026-01-02}
-}
 ```
 
 ---
