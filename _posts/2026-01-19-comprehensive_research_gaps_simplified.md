@@ -24,6 +24,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Results from studies allow for conclusions in their own right, but are *contradictory* when examined from a more abstract point of view.
 
+**সংজ্ঞা:** বিভিন্ন গবেষণার ফলাফল নিজস্ব দৃষ্টিকোণ থেকে সঠিক হলেও, একটি বিস্তৃত বা তাত্ত্বিক দৃষ্টিকোণ থেকে পর্যালোচনা করলে পরস্পরবিরোধী বা অসামঞ্জস্যপূর্ণ বলে প্রতীয়মান হয়।
+
 **Key Indicators:**
 - Conflicting findings across studies
 - Inconsistent results across contexts
@@ -42,6 +44,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 2. Knowledge Gap (Knowledge Void Gap)
 
 **Definition:** Desired research findings do not exist—the topic has simply not been studied yet.
+
+**সংজ্ঞা:** কোনো নির্দিষ্ট বিষয় বা সমস্যা সম্পর্কে গবেষণা এখনও করা হয়নি—জ্ঞানের সম্পূর্ণ অনুপস্থিতি রয়েছে।
 
 **Key Indicators:**
 - Complete absence of research on a topic
@@ -62,6 +66,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Professional behavior or practices deviate from research findings, or practitioners face problems not covered by existing research.
 
+**সংজ্ঞা:** পেশাদার কর্মপদ্ধতি বা বাস্তব অনুশীলন গবেষণা ফলাফলের সাথে সামঞ্জস্যপূর্ণ নয়, অথবা বাস্তবে যেসব সমস্যার মুখোমুখি হন তা বিদ্যমান গবেষণায় আলোচিত হয়নি।
+
 **Key Indicators:**
 - Theory-practice disconnect
 - Practitioner challenges unaddressed in literature
@@ -80,6 +86,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 4. Methodological Gap (Method and Research Design Gap)
 
 **Definition:** A variation of research methods is necessary to generate new insights or to avoid distorted findings from methodological limitations.
+
+**সংজ্ঞা:** নতুন অন্তর্দৃষ্টি অর্জন বা পদ্ধতিগত সীমাবদ্ধতা থেকে বিকৃত ফলাফল এড়াতে গবেষণা পদ্ধতির বৈচিত্র্য বা নতুন গবেষণা নকশা প্রয়োজন।
 
 **Key Indicators:**
 - Limited methodological approaches in existing studies
@@ -100,6 +108,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Research findings or propositions need to be evaluated or empirically verified through data collection and analysis.
 
+**সংজ্ঞা:** গবেষণার ফলাফল বা প্রস্তাবনাগুলো ডেটা সংগ্রহ এবং বিশ্লেষণের মাধ্যমে মূল্যায়ন বা পরীক্ষামূলকভাবে যাচাই করা প্রয়োজন।
+
 **Key Indicators:**
 - Untested hypotheses or propositions
 - Theoretical claims lacking empirical validation
@@ -119,6 +129,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Theory should be applied to certain research issues to generate new insights, or there is a lack of theoretical foundation for understanding phenomena.
 
+**সংজ্ঞা:** নতুন জ্ঞান অর্জনের জন্য নির্দিষ্ট গবেষণা সমস্যায় তত্ত্ব প্রয়োগ করা উচিত, অথবা কোনো ঘটনা বোঝার জন্য তাত্ত্বিক ভিত্তির অভাব রয়েছে।
+
 **Key Indicators:**
 - Atheoretical or under-theorized studies
 - Lack of theoretical frameworks
@@ -137,6 +149,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 7. Population Gap
 
 **Definition:** Research regarding populations that are not adequately represented or under-researched in the evidence base (e.g., by gender, race/ethnicity, age, disability status, etc.).
+
+**সংজ্ঞা:** এমন জনগোষ্ঠী যারা গবেষণায় পর্যাপ্তভাবে প্রতিনিধিত্বহীন বা কম গবেষিত (যেমন: লিঙ্গ, জাতিগত পরিচয়, বয়স, প্রতিবন্ধিতার অবস্থা ইত্যাদি)।
 
 **Key Indicators:**
 - Underrepresented demographic groups
@@ -159,6 +173,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Research conducted in certain regions or countries but lacking in others, limiting generalizability across different geographical contexts.
 
+**সংজ্ঞা:** কিছু নির্দিষ্ট অঞ্চল বা দেশে গবেষণা হয়েছে কিন্তু অন্যান্য স্থানে হয়নি, যা ভৌগোলিক প্রেক্ষাপটে ফলাফলের সাধারণীকরণ সীমিত করে।
+
 **Key Indicators:**
 - Geographic concentration of studies (e.g., North America-centric)
 - Western-centric research paradigms
@@ -175,6 +191,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 9. Temporal/Time Gap
 
 **Definition:** Research from a specific time period that needs updating, or longitudinal studies that haven't been conducted over extended periods.
+
+**সংজ্ঞা:** নির্দিষ্ট সময়কালের গবেষণা যা হালনাগাদ করা প্রয়োজন, অথবা দীর্ঘমেয়াদী অনুদৈর্ঘ্য গবেষণা যা এখনও পরিচালিত হয়নি।
 
 **Key Indicators:**
 - Outdated findings requiring contemporary examination
@@ -193,6 +211,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Research findings from one context (e.g., corporate settings) not validated in other contexts (e.g., non-profit, education, healthcare).
 
+**সংজ্ঞা:** একটি নির্দিষ্ট প্রেক্ষাপটে (যেমন: কর্পোরেট) প্রাপ্ত গবেষণা ফলাফল অন্য প্রেক্ষাপটে (যেমন: অলাভজনক, শিক্ষা, স্বাস্থ্যসেবা) যাচাই করা হয়নি।
+
 **Key Indicators:**
 - Context-specific limitations acknowledged but unaddressed
 - Limited transferability across sectors
@@ -209,6 +229,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 11. Application/Implementation Gap
 
 **Definition:** Theoretical research exists but lacks practical application studies or real-world implementation evidence.
+
+**সংজ্ঞা:** তাত্ত্বিক গবেষণা বিদ্যমান কিন্তু ব্যবহারিক প্রয়োগ গবেষণা বা বাস্তব বাস্তবায়নের প্রমাণ অনুপস্থিত।
 
 **Key Indicators:**
 - Theory without practice
@@ -227,6 +249,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Lack of research on emerging technologies or digital transformations in established fields.
 
+**সংজ্ঞা:** উদীয়মান প্রযুক্তি বা প্রতিষ্ঠিত ক্ষেত্রে ডিজিটাল রূপান্তর সম্পর্কে গবেষণার অভাব।
+
 **Key Indicators:**
 - New technology emergence
 - Digital disruption unaddressed
@@ -243,6 +267,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 13. Interdisciplinary Gap
 
 **Definition:** Absence of cross-disciplinary research combining multiple fields to address complex problems.
+
+**সংজ্ঞা:** জটিল সমস্যা সমাধানে একাধিক বিষয়ের সমন্বয়ে আন্তঃবিষয়ক গবেষণার অনুপস্থিতি।
 
 **Key Indicators:**
 - Siloed disciplinary research
@@ -261,6 +287,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Research at one level of analysis (micro/macro) without corresponding studies at other levels (e.g., individual vs. organizational level).
 
+**সংজ্ঞা:** একটি বিশ্লেষণ স্তরে (যেমন: ব্যক্তিগত বা সাংগঠনিক) গবেষণা হয়েছে কিন্তু অন্য স্তরে সংশ্লিষ্ট গবেষণা নেই।
+
 **Key Indicators:**
 - Single-level analysis predominance
 - Micro-macro divide
@@ -278,6 +306,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Lack of validated instruments, metrics, or assessment tools for measuring specific constructs or phenomena.
 
+**সংজ্ঞা:** নির্দিষ্ট ধারণা বা ঘটনা পরিমাপের জন্য বৈধ উপকরণ, মেট্রিক্স বা মূল্যায়ন সরঞ্জামের অভাব।
+
 **Key Indicators:**
 - No standard measures available
 - Measurement validity or reliability issues
@@ -294,6 +324,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 16. Cultural Gap
 
 **Definition:** Research dominated by Western or specific cultural perspectives, lacking cross-cultural validation or indigenous knowledge.
+
+**সংজ্ঞা:** পশ্চিমা বা নির্দিষ্ট সাংস্কৃতিক দৃষ্টিভঙ্গির প্রাধান্য রয়েছে এমন গবেষণা, যেখানে আন্তঃসাংস্কৃতিক যাচাইকরণ বা স্থানীয় জ্ঞানের অভাব রয়েছে।
 
 **Key Indicators:**
 - Cultural bias in theories or measures
@@ -314,6 +346,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Understanding of outcomes exists but the processes or mechanisms leading to those outcomes are unclear.
 
+**সংজ্ঞা:** ফলাফল সম্পর্কে ধারণা আছে কিন্তু সেই ফলাফলে পৌঁছানোর প্রক্রিয়া বা পদ্ধতি অস্পষ্ট।
+
 **Key Indicators:**
 - Black box phenomena
 - Unknown causal mechanisms
@@ -330,6 +364,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 18. Longitudinal Gap
 
 **Definition:** Predominantly cross-sectional studies with insufficient long-term longitudinal research.
+
+**সংজ্ঞা:** প্রধানত প্রস্থচ্ছেদ গবেষণা রয়েছে কিন্তু দীর্ঘমেয়াদী অনুদৈর্ঘ্য গবেষণার অপর্যাপ্ততা।
 
 **Key Indicators:**
 - Snapshot research only
@@ -348,6 +384,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Lack of comparative studies across different groups, contexts, or conditions.
 
+**সংজ্ঞা:** বিভিন্ন দল, প্রেক্ষাপট বা শর্তের মধ্যে তুলনামূলক গবেষণার অভাব।
+
 **Key Indicators:**
 - Single-case focus
 - No benchmarking or comparison studies
@@ -364,6 +402,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 20. Replication Gap
 
 **Definition:** Original findings not replicated or validated through independent studies, raising questions about reproducibility.
+
+**সংজ্ঞা:** মূল ফলাফলগুলো স্বাধীন গবেষণার মাধ্যমে পুনরাবৃত্তি বা যাচাই করা হয়নি, যা পুনরুৎপাদনযোগ্যতা নিয়ে প্রশ্ন উত্থাপন করে।
 
 **Key Indicators:**
 - Unreplicated results
@@ -384,6 +424,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Fragmented research findings that haven't been synthesized or integrated into coherent frameworks.
 
+**সংজ্ঞা:** বিচ্ছিন্ন গবেষণা ফলাফল যা সুসংগত কাঠামোতে সংশ্লেষিত বা একীভূত করা হয়নি।
+
 **Key Indicators:**
 - Scattered literature
 - Lack of meta-analyses or systematic reviews
@@ -400,6 +442,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 22. Stakeholder Gap
 
 **Definition:** Research conducted from limited stakeholder perspectives, missing voices of key groups affected by the phenomenon.
+
+**সংজ্ঞা:** সীমিত স্টেকহোল্ডার দৃষ্টিভঙ্গি থেকে পরিচালিত গবেষণা, যেখানে ঘটনা দ্বারা প্রভাবিত মূল গোষ্ঠীগুলোর কণ্ঠস্বর অনুপস্থিত।
 
 **Key Indicators:**
 - Single perspective studies (e.g., only management views)
@@ -418,6 +462,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Correlational relationships established but underlying causal mechanisms unexplored.
 
+**সংজ্ঞা:** পারস্পরিক সম্পর্ক প্রতিষ্ঠিত হয়েছে কিন্তু অন্তর্নিহিত কার্যকারণ পদ্ধতি অনুসন্ধান করা হয়নি।
+
 **Key Indicators:**
 - Association without causation
 - Mediating or moderating processes unknown
@@ -435,6 +481,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 
 **Definition:** Research findings established but boundaries of applicability (when/where/for whom) remain unclear.
 
+**সংজ্ঞা:** গবেষণা ফলাফল প্রতিষ্ঠিত কিন্তু প্রয়োগযোগ্যতার সীমানা (কখন/কোথায়/কার জন্য) অস্পষ্ট রয়ে গেছে।
+
 **Key Indicators:**
 - Undefined scope of theories
 - Moderating factors unknown
@@ -451,6 +499,8 @@ A research gap represents an area where knowledge is incomplete, contradictory, 
 #### 25. Impact Gap
 
 **Definition:** Research conducted but long-term impacts, consequences, or implications not assessed.
+
+**সংজ্ঞা:** গবেষণা পরিচালিত হয়েছে কিন্তু দীর্ঘমেয়াদী প্রভাব, পরিণতি বা প্রভাবসমূহ মূল্যায়ন করা হয়নি।
 
 **Key Indicators:**
 - Short-term focus only
@@ -649,33 +699,26 @@ Research gaps are **dynamic, not static**:
 
 ### Foundational Framework
 
-**Müller-Bloch, C., & Kranz, J. (2015).** A framework for rigorously identifying research gaps in qualitative literature reviews. *ICIS 2015 Proceedings*.
-[ResearchGate](https://www.researchgate.net/publication/283271278_A_Framework_for_Rigorously_Identifying_Research_Gaps_in_Qualitative_Literature_Reviews) | [Semantic Scholar](https://www.semanticscholar.org/paper/A-Framework-for-Rigorously-Identifying-Research-in-M%C3%BCller-Bloch-Kranz/73596c4957deab7c7a3fd1d4261994e47be1508c)
-
-**Robinson, K. A., Saldanha, I. J., & McKoy, N. A. (2011).** Frameworks for determining research gaps during systematic reviews. *Agency for Healthcare Research and Quality (AHRQ)*.
-[NCBI Bookshelf](https://www.ncbi.nlm.nih.gov/books/NBK62478/) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/21937195/)
+1. [ResearchGate](https://www.researchgate.net/publication/283271278_A_Framework_for_Rigorously_Identifying_Research_Gaps_in_Qualitative_Literature_Reviews) | [Semantic Scholar](https://www.semanticscholar.org/paper/A-Framework-for-Rigorously-Identifying-Research-in-M%C3%BCller-Bloch-Kranz/73596c4957deab7c7a3fd1d4261994e47be1508c)
+2. [NCBI Bookshelf](https://www.ncbi.nlm.nih.gov/books/NBK62478/) | [PubMed](https://pubmed.ncbi.nlm.nih.gov/21937195/)
 
 ### Methodological Advances
 
-**Ployhart, R. E., & Vandenberg, R. J. (2010).** Longitudinal research: The theory, design, and analysis of change. *Journal of Management*, 36(1), 94-120.
-
-**Aguinis, H., & Edwards, J. R. (2014).** Methodological wishes for the next decade and how to make wishes come true. *Journal of Management Studies*, 51(1), 143-174.
+1. [DOI: 10.1177/0149206309352110](https://doi.org/10.1177/0149206309352110)
+2. [DOI: 10.1111/joms.12058](https://doi.org/10.1111/joms.12058)
 
 ### Cross-Cultural Research
 
-**Henrich, J., Heine, S. J., & Norenzayan, A. (2010).** The weirdest people in the world? *Behavioral and Brain Sciences*, 33(2-3), 61-83.
-[PubMed](https://pubmed.ncbi.nlm.nih.gov/20550733/) | [Harvard PDF](https://scholar.harvard.edu/files/henrich/files/henrich_heine_norenzayan_2010-2.pdf) | [DOI: 10.1017/S0140525X0999152X](https://doi.org/10.1017/S0140525X0999152X)
+1. [DOI: 10.1017/S0140525X0999152X](https://doi.org/10.1017/S0140525X0999152X)
 
 ### Replication and Reproducibility
 
-**Open Science Collaboration. (2015).** Estimating the reproducibility of psychological science. *Science*, 349(6251), aac4716.
-[PubMed](https://pubmed.ncbi.nlm.nih.gov/26315443/) | [ResearchGate](https://www.researchgate.net/publication/281286234_Estimating_the_reproducibility_of_psychological_science) | [DOI: 10.1126/science.aac4716](https://doi.org/10.1126/science.aac4716)
+1. [DOI: 10.1126/science.aac4716](https://doi.org/10.1126/science.aac4716)
 
 ### Theory Development
 
-**Whetten, D. A. (1989).** What constitutes a theoretical contribution? *Academy of Management Review*, 14(4), 490-495.
-
-**Sutton, R. I., & Staw, B. M. (1995).** What theory is not. *Administrative Science Quarterly*, 40(3), 371-384.
+1. [DOI: 10.5465/amr.1989.4308371](https://doi.org/10.5465/amr.1989.4308371)
+2. [DOI: 10.2307/2393788](https://doi.org/10.2307/2393788)
 
 ---
 
