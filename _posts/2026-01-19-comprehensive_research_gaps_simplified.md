@@ -1,7 +1,7 @@
 ---
 title: "Comprehensive Taxonomy of Research Gaps: A Complete Guide for Researchers"
 date: 2026-01-19
-author: "ScholarNote"
+author: "ScholarsNote"
 categories: [Research, Methodology]
 tags: [research-gaps, literature-review, research-methodology, dissertation, grant-writing]
 description: "A comprehensive guide to 25 distinct types of research gaps with practical frameworks, identification strategies, and examples for dissertation proposals, grant applications, and journal articles"
