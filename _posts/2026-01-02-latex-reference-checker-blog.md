@@ -1,7 +1,7 @@
 ---
 title: "LaTeX Reference Checker: Bash Script to Find Unused Labels and Missing Citations"
 date: 2026-01-02
-author: "ScholarNote"
+author: "ScholarsNote"
 categories: [LaTeX, Tools, Research]
 tags: [latex, bash, academic-writing, productivity, script]
 description: "A robust bash script that audits LaTeX documents to find unreferenced figures, tables, equations, and citation issues while ignoring commented code"
