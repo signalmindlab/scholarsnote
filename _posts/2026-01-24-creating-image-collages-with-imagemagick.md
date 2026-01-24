@@ -1,7 +1,6 @@
 ---
 title: "Creating Professional Image Collages with ImageMagick: A Complete Guide"
 date: 2026-01-24
-author: "ScholarsNote"
 categories: [Guides, Tools]
 tags: [imagemagick, figures, academic-writing, image-processing, automation]
 description: "Learn how to create professional academic image collages with labeled subfigures using ImageMagick's command-line tools, plus metadata removal techniques for privacy and clean output."
