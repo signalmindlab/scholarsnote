@@ -1,7 +1,6 @@
 ---
 title: "ওয়েব অব সায়েন্সের শীর্ষ ১% বিজ্ঞানী: হাইলি সাইটেড রিসার্চার তালিকা বোঝা"
 date: 2026-01-16
-author: "ScholarNote"
 categories: [Research, Academic Rankings, Bangla]
 tags: [highly-cited-researchers, web-of-science, research-metrics, top-scientists, bangla]
 description: "ওয়েব অব সায়েন্সের হাইলি সাইটেড রিসার্চার তালিকা - কীভাবে শীর্ষ ১% বিজ্ঞানী নির্ধারণ করা হয়, নির্বাচন মাপকাঠি এবং গবেষণা ক্যারিয়ারে এর প্রভাব"

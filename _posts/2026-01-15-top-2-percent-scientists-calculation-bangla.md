@@ -1,7 +1,6 @@
 ---
 title: "শীর্ষ ২% বিজ্ঞানী কীভাবে নির্ধারণ করা হয়: একটি বিস্তারিত গাইড"
 date: 2026-01-15
-author: "ScholarNote"
 categories: [Research, Academic Rankings, Bangla]
 tags: [top-scientists, rankings, research-metrics, citation-analysis, bangla]
 description: "স্ট্যানফোর্ড বিশ্ববিদ্যালয়ের শীর্ষ ২% বিজ্ঞানীদের তালিকা কীভাবে তৈরি করা হয় এবং কোন মেট্রিক্স ব্যবহার করা হয় তার বিস্তারিত ব্যাখ্যা"

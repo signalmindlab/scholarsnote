@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.rogue-scholar.org)",
+      "Bash(where:*)",
+      "Bash(cmd /c \"where ruby 2>&1 & where bundle 2>&1 & where jekyll 2>&1 & where gem 2>&1\")",
+      "Bash(cmd /c \"where docker 2>&1\")",
+      "Bash(docker --version:*)",
+      "Bash(docker run:*)",
+      "Bash(cmd /c \"where code 2>&1\")",
+      "Bash(cmd /c \"where grip 2>&1 & where python 2>&1 & where pip 2>&1 & where npm 2>&1 & where npx 2>&1\")",
+      "Bash(pip install:*)",
+      "Bash(docker restart:*)",
+      "Bash(docker stop:*)"
+    ]
+  }
+}
