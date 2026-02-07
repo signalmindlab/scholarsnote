@@ -1,24 +1,14 @@
 ---
 title: "LaTeX Reference Checker: Bash Script to Find Unused Labels and Missing Citations"
-date: 2026-01-03
+date: 2026-01-03 10:00:00 +0900
 categories: [LaTeX, Tools, Research]
 tags: [latex, bash, academic-writing, productivity, script]
-description: "A robust bash script that audits LaTeX documents to find unreferenced figures, tables, equations, and citation issues while ignoring commented code"
-featured: true
+description: "A robust bash script that audits LaTeX documents to find unreferenced figures, tables, equations, and citation issues while ignoring commented code."
+author: Md Abdus Samad
+doi: "10.59350/XXXXXXXX-XXXXX"
 ---
 
-## Overview
-
-When preparing research manuscripts, it's common to accumulate unused labels, orphaned citations, and commented-out content. This bash script provides a comprehensive audit of your LaTeX document, identifying:
-
-- Unreferenced figures, tables, and equations
-- Unused bibliography entries
-- Missing citations (cited but not in .bib file)
-- All while properly ignoring commented lines
-
-**Key Feature:** The script preserves the sequence in which labels appear in your document, making it easier to locate and manage them.
-
----
+When preparing research manuscripts, it is common to accumulate unused labels, orphaned citations, and commented-out content. This bash script provides a comprehensive audit of your LaTeX document, identifying unreferenced figures, tables, and equations, unused bibliography entries, and missing citations -- all while properly ignoring commented lines. The script preserves the sequence in which labels appear in your document, making it easier to locate and manage them.
 
 ## The Problem
 
@@ -33,20 +23,16 @@ During manuscript development, you might encounter:
 
 Manual checking across 50+ pages with multiple revisions becomes impractical.
 
----
-
 ## The Solution
 
 ### Features
 
-✅ **Comment-aware**: Ignores both full-line and inline comments  
-✅ **Sequence-preserving**: Shows labels in document order  
-✅ **Comprehensive**: Checks figures, tables, equations, and citations  
-✅ **Multiple reference styles**: Supports `\ref`, `\autoref`, and `\eqref`  
-✅ **Lightweight**: Pure bash, no dependencies  
-✅ **Fast**: Processes typical manuscripts in <1 second  
-
----
+- **Comment-aware**: Ignores both full-line and inline comments
+- **Sequence-preserving**: Shows labels in document order
+- **Comprehensive**: Checks figures, tables, equations, and citations
+- **Multiple reference styles**: Supports `\ref`, `\autoref`, and `\eqref`
+- **Lightweight**: Pure bash, no dependencies
+- **Fast**: Processes typical manuscripts in less than one second
 
 ## Installation and Usage
 
@@ -141,28 +127,28 @@ BIBFILE=$(echo "$TEXCONTENT" | grep -oP '\\bibliography\{\K[^}]+' | head -1)
 
 if [ -n "$BIBFILE" ]; then
     [[ "$BIBFILE" != *.bib ]] && BIBFILE="${BIBFILE}.bib"
-    
+
     if [ -f "$BIBFILE" ]; then
         echo "Using bibliography file: $BIBFILE"
-        
+
         BIB_ENTRIES=$(grep -oP '@\w+\{\K[^,]+' "$BIBFILE" | awk '!seen[$0]++')
         CITATIONS=$(echo "$TEXCONTENT" | grep -oP '\\cite[tp]?\{\K[^}]+' | tr ',' '\n' | sed 's/^[[:space:]]*//' | awk '!seen[$0]++')
-        
+
         BIB_COUNT=$(echo "$BIB_ENTRIES" | grep -v '^$' | wc -l)
         CITE_TOTAL=$(echo "$TEXCONTENT" | grep -oP '\\cite[tp]?\{[^}]+\}' | wc -l)
         CITE_UNIQ=$(echo "$CITATIONS" | grep -v '^$' | wc -l)
-        
+
         echo "Total bib entries: $BIB_COUNT"
         echo "Total citation commands: $CITE_TOTAL"
         echo "Unique cited keys: $CITE_UNIQ"
-        
+
         echo "Uncited bibliography entries:"
         while IFS= read -r entry; do
             if ! echo "$CITATIONS" | grep -qx "$entry"; then
                 echo "  $entry"
             fi
         done <<< "$BIB_ENTRIES"
-        
+
         echo "Missing bibliography entries (cited but not in .bib):"
         while IFS= read -r cite; do
             if ! echo "$BIB_ENTRIES" | grep -qx "$cite"; then
@@ -200,11 +186,9 @@ Execute the script with your LaTeX file:
 
 Replace `manuscript.tex` with your actual LaTeX filename. The script will analyze your document and display a comprehensive report of all references.
 
----
-
 ## Example Output
 
-Here's what the script reports for a typical manuscript:
+Here is what the script reports for a typical manuscript:
 
 ```
 Checking references in: paper.tex
@@ -247,9 +231,99 @@ Missing bibliography entries (cited but not in .bib):
 Check complete!
 ```
 
-**Note:** The script detects references made with `\ref{fig:one}`, `\autoref{tab:results}`, or `\eqref{eq:main}` - all are counted correctly.
+The script detects references made with `\ref{fig:one}`, `\autoref{tab:results}`, or `\eqref{eq:main}` -- all are counted correctly.
 
----
+## Technical Deep Dive
+
+### How It Works
+
+#### 1. Comment Removal
+
+The script uses a two-step approach to handle comments:
+
+```bash
+# Step 1: Remove lines starting with %
+# Step 2: Remove inline comments but preserve \%
+TEXCONTENT=$(grep -v '^\s*%' "$TEXFILE" | sed 's/\([^\\]\)%.*$/\1/')
+```
+
+The order matters. Full-line comments must be removed first, then inline comments.
+
+**Test cases:**
+
+| LaTeX Code | Processed As |
+|------------|--------------|
+| `\label{fig:test}` | Included |
+| `% \label{fig:old}` | Excluded |
+| `Text \ref{fig:a} % comment` | `\ref{fig:a}` included |
+| `50\% efficiency` | `\%` preserved |
+
+#### 2. Sequence Preservation
+
+Uses `awk '!seen[$0]++'` to remove duplicates while maintaining order:
+
+```bash
+# Traditional approach (loses order)
+sort -u
+
+# Our approach (preserves order)
+awk '!seen[$0]++'
+```
+
+**Why this matters:**
+
+If your document has:
+```latex
+\section{Methods}        % Line 50
+\label{fig:workflow}     % Line 65
+
+\section{Results}        % Line 150
+\label{fig:accuracy}     % Line 170
+
+\section{Appendix}       % Line 300
+\label{fig:extra}        % Line 310 (unreferenced)
+```
+
+The output shows `fig:extra` in document order (not alphabetically sorted), making it easier to locate.
+
+#### 3. Pattern Matching
+
+Uses Perl-compatible regex with `grep -oP`:
+
+```bash
+# For tables and figures: catches both \ref and \autoref
+grep -oP '\\(auto)?ref\{tab:\K[^}]+'
+
+# For equations: catches \ref, \autoref, and \eqref
+grep -oP '\\((auto|eq))?ref\{eq:\K[^}]+'
+```
+
+**Breakdown:**
+- `\\(auto)?ref\{tab:` -- Match `\ref{tab:` or `\autoref{tab:`
+- `\\((auto|eq))?ref\{eq:` -- Match `\ref{eq:`, `\autoref{eq:`, or `\eqref{eq:`
+- `\K` -- Discard everything matched so far
+- `[^}]+` -- Capture everything until `}`
+
+**Supported reference commands:**
+- `\ref{...}` -- Standard LaTeX reference
+- `\autoref{...}` -- Automatic reference from hyperref package
+- `\eqref{...}` -- Equation reference (for equations only)
+
+**Examples:**
+
+Labels detected:
+- `\label{tab:results}` extracts `results`
+- `\label{fig:analysis_2023}` extracts `analysis_2023`
+- `\label{eq:main_theorem}` extracts `main_theorem`
+
+References detected:
+- `\ref{fig:diagram}` matches `diagram`
+- `\autoref{tab:results}` matches `results`
+- `\eqref{eq:einstein}` matches `einstein`
+
+Not matched:
+- `% \label{tab:old}` (filtered by comment removal)
+- `\label{sec:intro}` (different prefix -- use section extension)
 
 ## Advanced Usage
 
@@ -261,9 +335,7 @@ Create `check_all.sh`:
 #!/bin/bash
 
 for file in *.tex; do
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "File: $file"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ./check_latex_refs.sh "$file"
     echo ""
 done
@@ -296,9 +368,9 @@ Add to `.git/hooks/pre-commit`:
 UNREFERENCED=$(grep -c "^  " ref_check.log)
 
 if [ $UNREFERENCED -gt 0 ]; then
-    echo "⚠️  Warning: $UNREFERENCED unreferenced items found"
+    echo "Warning: $UNREFERENCED unreferenced items found"
     cat ref_check.log
-    
+
     read -p "Continue commit? (y/n) " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -347,41 +419,39 @@ Create `pre_submit.sh`:
 ```bash
 #!/bin/bash
 
-echo "📋 Pre-submission Checklist"
-echo "═══════════════════════════"
+echo "Pre-submission Checklist"
+echo "========================"
 
 # 1. Reference check
-echo "1️⃣  Checking references..."
+echo "1. Checking references..."
 ./check_latex_refs.sh manuscript.tex > ref_audit.log
 
 # 2. Count issues
 ISSUES=$(grep -c "^  " ref_audit.log)
 if [ $ISSUES -eq 0 ]; then
-    echo "   ✓ No unreferenced items"
+    echo "   No unreferenced items"
 else
-    echo "   ⚠️  $ISSUES unreferenced items found"
+    echo "   $ISSUES unreferenced items found"
     cat ref_audit.log
 fi
 
 # 3. Check compilation
-echo "2️⃣  Checking compilation..."
+echo "2. Checking compilation..."
 pdflatex -interaction=nonstopmode manuscript.tex > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-    echo "   ✓ Compiles successfully"
+    echo "   Compiles successfully"
 else
-    echo "   ✗ Compilation errors found"
+    echo "   Compilation errors found"
 fi
 
 # 4. Check bibliography
-echo "3️⃣  Checking bibliography..."
+echo "3. Checking bibliography..."
 bibtex manuscript > /dev/null 2>&1
-echo "   ✓ Bibliography processed"
+echo "   Bibliography processed"
 
-echo "═══════════════════════════"
-echo "✅ Checklist complete!"
+echo "========================"
+echo "Checklist complete!"
 ```
-
----
 
 ## Extensions and Customizations
 
@@ -447,7 +517,7 @@ echo "Total labels: $TAB_COUNT"
 echo "Total refs: $REF_COUNT"
 
 if [ "$TAB_COUNT" -eq "$REF_COUNT" ]; then
-    echo -e "${GREEN}✓ All tables referenced!${NC}"
+    echo -e "${GREEN}All tables referenced${NC}"
 else
     echo -e "${RED}Unreferenced tables:${NC}"
     while IFS= read -r label; do
@@ -495,11 +565,11 @@ if [ "$2" == "--json" ]; then
     # Extract data
     TAB_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{tab:\K[^}]+' | awk '!seen[$0]++')
     TAB_REFS=$(echo "$TEXCONTENT" | grep -oP '\\ref\{tab:\K[^}]+' | awk '!seen[$0]++')
-    
+
     # Build unreferenced array
     UNREF_TABS=$(comm -23 <(echo "$TAB_LABELS" | sort) <(echo "$TAB_REFS" | sort) | \
         awk '{printf "\"%s\",", $0}' | sed 's/,$//')
-    
+
     # Output JSON
     cat << EOF
 {
@@ -514,8 +584,6 @@ if [ "$2" == "--json" ]; then
 EOF
 fi
 ```
-
----
 
 ## Workflow Integration Examples
 
@@ -533,12 +601,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Run reference checker
         run: |
           chmod +x check_latex_refs.sh
           ./check_latex_refs.sh manuscript.tex
-          
+
       - name: Count issues
         run: |
           ISSUES=$(./check_latex_refs.sh manuscript.tex | grep "^  " | wc -l)
@@ -592,12 +660,10 @@ if [ $(grep -c "^  " ref_check.log) -eq 0 ]; then
     git commit -m "Update: references checked"
     git push origin master
 else
-    echo "⚠️  Unreferenced items found. Fix before pushing."
+    echo "Unreferenced items found. Fix before pushing."
     cat ref_check.log
 fi
 ```
-
----
 
 ## Comparison with Alternatives
 
@@ -608,8 +674,6 @@ fi
 | `chktex` | Comprehensive linting, many checks | Verbose, complex output | Deep analysis |
 | VS Code LaTeX Workshop | Real-time, editor-integrated | Editor-specific, no batch | Active editing |
 | Python scripts | Very flexible, HTML reports | Slower, requires Python | Custom workflows |
-
----
 
 ## Real-World Case Study
 
@@ -650,7 +714,7 @@ Uncited bibliography entries:
 
 1. **Moved** `tab:correlation_matrix` to supplementary materials
 2. **Removed** 9 unused deep learning references (leftover from earlier drafts)
-3. **Cleaned up** bibliography from 67 → 58 entries
+3. **Cleaned up** bibliography from 67 to 58 entries
 4. **Verified** all remaining citations were relevant
 
 ### Final State
@@ -666,16 +730,14 @@ Total bib entries: 58
 Uncited bibliography entries:
 ```
 
-**Time saved:** ~30 minutes of manual checking  
+**Time saved:** Approximately 30 minutes of manual checking
 **Outcome:** Clean submission, no reviewer comments about references
-
----
 
 ## Limitations and Workarounds
 
 ### Current Limitations
 
-1. **Single file only**: Doesn't traverse `\input{}` or `\include{}` commands
+1. **Single file only**: Does not traverse `\input{}` or `\include{}` commands
 2. **Standard prefixes**: Assumes `tab:`, `fig:`, `eq:`, `sec:` conventions
 3. **Reference commands**: Detects `\ref`, `\autoref`, and `\eqref` (for equations)
 4. **Citation commands**: Only detects `\cite`, `\citep`, `\citet`
@@ -709,8 +771,6 @@ CITATIONS=$(echo "$TEXCONTENT" | grep -oP '\\cite(p|t|author|year|)?\{\K[^}]+' |
 # Change BIBFILE detection:
 BIBFILE=$(echo "$TEXCONTENT" | grep -oP '\\addbibresource\{\K[^}]+' | head -1)
 ```
-
----
 
 ## Troubleshooting
 
@@ -779,8 +839,6 @@ grep -n "label{tab:problematic}" manuscript.tex
 grep "tab:problematic" manuscript.tex | grep -v "^%"
 ```
 
----
-
 ## Performance Optimization
 
 For very large documents (>10,000 lines):
@@ -799,70 +857,21 @@ rg -oP '\\label\{tab:\K[^}]+' "$TEXFILE"
 
 ---
 
-## Contributing and Feedback
+## How to Cite
 
-This tool is open for improvements! If you:
+> Samad, M. A. (2026). LaTeX reference checker: Bash script to find unused labels and missing citations. *ScholarsNote*. <https://doi.org/10.59350/XXXXXXXX-XXXXX>
 
-- Find bugs or edge cases
-- Have feature suggestions
-- Want to add support for other label types
-- Created useful extensions
+**BibTeX:**
 
-Please share your feedback or contribute to the project.
-
----
-
-## Version History
-
-**v1.0 (2026-01-02)**
-- Initial release
-- Support for tables, figures, equations, citations
-- Comment filtering (inline and full-line)
-- Sequence-preserving output
-
-**Planned features:**
-- Support for `\input{}` and `\include{}`
-- Algorithm and listing labels
-- HTML output format
-- Configurable label prefixes
-- Multi-language support
-
----
-
-## Related Resources
-
-- [LaTeX Reference Checker (Interactive)](https://scholarsnote.org/latex-reference-checker/) - Web-based version
-- [BibTeX Validator](https://scholarsnote.org/bibtex-validator/) - Check bibliography formatting
-- [LaTeX Best Practices Guide](https://scholarsnote.org/latex-best-practices/)
-
----
-
-## License
-
-MIT License - Free to use, modify, and distribute.
-
+```bibtex
+@misc{samad2026latexrefchecker,
+  author       = {Samad, Md Abdus},
+  title        = {LaTeX Reference Checker: Bash Script to Find Unused Labels and Missing Citations},
+  year         = {2026},
+  month        = jan,
+  howpublished = {ScholarsNote},
+  url          = {https://www.scholarsnote.org/posts/latex-label-prefix-guide-blog/},
+  doi          = {10.59350/XXXXXXXX-XXXXX},
+  note         = {Accessed: 2026-01-03}
+}
 ```
-MIT License
-
-Copyright (c) 2026 ScholarNote
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
----
-
-**Last updated:** January 2, 2026  
-**Tested on:** Ubuntu 20.04+, macOS 12+, Git Bash (Windows)  
-**Script version:** 1.0  
-
----
-
-*ScholarNote provides free tools and resources for academic researchers. Follow us for updates on new tools and LaTeX productivity tips.*

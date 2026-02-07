@@ -7,118 +7,81 @@ tags: [latex, powershell, automation, academic writing, bibliography management,
 pin: false
 ---
 
-**Have you ever found yourself manually replacing hundreds of `\cite{1}` with `\cite{authorYEARkeyword}` in your LaTeX document?**
+**We've all been there.** You're wrapping up a paper in LaTeX, and you realize your document is full of `\cite{1}`, `\cite{2}`, `\cite{3}`... but your `.bib` file uses proper keys like `smith2023keyword`. Now you're staring at dozens — maybe hundreds — of citations that need fixing, one by one.
 
-If you're working on a research paper or thesis in LaTeX, you've probably encountered this frustrating situation: you have a BibTeX file with proper citation keys (like `martinez2023neural`), but your LaTeX document uses numeric references like `\cite{1}`, `\cite{2}`, etc.
+I ran into this exact problem while working on a manuscript last year. After spending way too long doing it by hand (and making a few mistakes along the way), I wrote a short PowerShell script to handle it automatically. It saved me a ton of time, and I think it might help you too.
 
-Manually replacing dozens (or hundreds!) of these citations is tedious and error-prone. But there's a better way! In this tutorial, I'll show you how to use a simple PowerShell script to automatically convert all your numeric citations to proper citation keys in seconds.
+## What's the Problem, Exactly?
 
-## The Problem: Managing Numeric Citations in LaTeX
+Here's what it usually looks like. Your `.tex` file has something like this:
 
-**Example of the problem:**
-
-Your `.tex` file looks like this:
 ```latex
-Recent advances in neural networks have revolutionized climate modeling \cite{1}\cite{2}. 
-These computational breakthroughs enable unprecedented accuracy in predictions \cite{3}.
+Recent advances have revolutionized the field \cite{1}\cite{2}.
 ```
 
-But your `.bib` file has entries like:
+Meanwhile, your `.bib` file has proper entries like:
+
 ```bibtex
-@article{martinez2023neural,
-  title={Neural network approaches to climate modeling},
-  author={Martinez, Elena and Chen, Wei and O'Brien, Patrick},
-  journal={Nature Climate Change},
+@article{smith2023keyword,
+  title={Title of the First Paper},
+  author={Smith, John and Lee, Jane},
+  journal={Journal Name},
   year={2023}
 }
 ```
 
-The disconnect between numeric citations and proper citation keys creates maintenance headaches and makes your document harder to manage.
+See the mismatch? Your document says `\cite{1}`, but it should say `\cite{smith2023keyword}`. When you only have a few references, it's no big deal. But when you have 50 or 100? That's where things get painful.
 
-## The Solution: PowerShell Automation
+## The Fix: A Simple PowerShell Script
 
-### What You'll Learn
+The idea is straightforward — we tell the script which number maps to which citation key, and it does all the replacing for us. No more Ctrl+H marathons.
 
-- How to create a mapping between numbers and citation keys
-- How to use regex patterns to find and replace citations
-- How to automate the entire process with PowerShell
+### Before You Start
 
-### Prerequisites
+You'll need:
+- A Windows PC (PowerShell is already there)
+- Your `.tex` file with numeric citations
+- Your `.bib` file so you know the correct keys
+- About 5–10 minutes
 
-- Windows PC (PowerShell comes pre-installed)
-- A LaTeX file with numeric citations
-- A BibTeX file with citation keys
-- 5-10 minutes of your time
+## Step 1: Set Up Your Citation Mapping
 
-## Step 1: Create Your Citation Mapping
-
-First, we need to create a mapping between the numbers you're using and the actual citation keys. Let's say you have this small bibliography:
+Take a look at your `.bib` file and note down which number corresponds to which citation key. For example:
 
 ```bibtex
 %1
-@article{martinez2023neural,
-  title={Neural network approaches to climate modeling: A comprehensive review},
-  author={Martinez, Elena and Chen, Wei and O'Brien, Patrick},
-  journal={Nature Climate Change},
+@article{smith2023keyword,
+  title={Title of the First Paper},
+  author={Smith, John and Lee, Jane},
+  journal={Journal Name One},
   year={2023}
 }
 
 %2
-@inproceedings{johnson2024quantum,
-  title={Quantum computing applications in cryptography},
-  author={Johnson, Michael A and Lee, Sarah K},
-  booktitle={Proceedings of the ACM Conference on Computer Security},
-  pages={145--159},
+@inproceedings{doe2024analysis,
+  title={Title of the Second Paper},
+  author={Doe, Alice and Park, James},
+  booktitle={Proceedings of the Conference Name},
+  pages={100--115},
   year={2024}
-}
-
-%3
-@article{patel2022sustainable,
-  title={Sustainable urban development through green infrastructure},
-  author={Patel, Rajesh and Williams, Jennifer and Schmidt, Hans},
-  journal={Urban Studies},
-  volume={59},
-  number={8},
-  pages={1623--1641},
-  year={2022}
-}
-
-%4
-@book{anderson2021machine,
-  title={Machine Learning: Theory and Practice},
-  author={Anderson, Robert J},
-  publisher={MIT Press},
-  address={Cambridge, MA},
-  year={2021}
-}
-
-%5
-@article{nguyen2023biodiversity,
-  title={Biodiversity conservation in tropical rainforests: Challenges and opportunities},
-  author={Nguyen, Linh T and Silva, Carlos and Brown, Amanda},
-  journal={Conservation Biology},
-  volume={37},
-  number={2},
-  pages={412--428},
-  year={2023}
 }
 ```
 
+So `1` maps to `smith2023keyword`, `2` maps to `doe2024analysis`, and so on. Just keep adding entries for as many references as you have.
+
 ## Step 2: The PowerShell Script
 
-Here's the complete script that does all the work for you:
+Here's the full script. You can copy it as-is and just update the mapping part with your own citation keys:
 
 ```powershell
 # LaTeX Citation Replacement Script
 # Replaces \cite{number} with \cite{citationkey}
 
-# Create the citation mapping
+# Create the citation mapping (add as many as you need)
 $citationMap = @{
-    '1' = 'martinez2023neural'
-    '2' = 'johnson2024quantum'
-    '3' = 'patel2022sustainable'
-    '4' = 'anderson2021machine'
-    '5' = 'nguyen2023biodiversity'
+    '1' = 'smith2023keyword'
+    '2' = 'doe2024analysis'
+    # '3' = 'your_next_key_here'
 }
 
 # Interactive file selection
@@ -132,7 +95,7 @@ $openFileDialog.Title = "Select your LaTeX file"
 if ($openFileDialog.ShowDialog() -eq 'OK') {
     $inputFile = $openFileDialog.FileName
     $outputFile = $inputFile -replace '\.tex$', '_updated.tex'
-    
+
     Write-Host "Selected: $inputFile" -ForegroundColor Green
 } else {
     Write-Host "No file selected. Exiting." -ForegroundColor Red
@@ -153,7 +116,7 @@ $result = [regex]::Replace($content, $pattern, {
     param($match)
     $number = $match.Groups[1].Value
     $key = $citationMap[$number]
-    
+
     if ($key) {
         return "\cite{$key}"
     } else {
@@ -176,574 +139,188 @@ foreach ($m in $matches) {
 }
 ```
 
-## Step 3: How to Use the Script
+## Step 3: Running the Script
 
-### First-Time Setup (One Time Only)
+### One-Time Setup
 
-1. **Enable PowerShell scripts:**
-   - Press `Windows + X`
-   - Click "Windows PowerShell (Admin)"
-   - Run: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
-   - Type `Y` and press Enter
+If you've never run a PowerShell script before, you'll need to allow it first. Just do this once:
 
-### Running the Script
+1. Press `Windows + X` and click **Windows PowerShell (Admin)**
+2. Type: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
+3. Hit `Y` and Enter
 
-1. **Save the script:**
-   - Copy the script above
-   - Save it as `replace-citations.ps1` (anywhere on your computer)
+That's it. You won't need to do this again.
 
-2. **Run it:**
-   - Right-click on `replace-citations.ps1`
-   - Click "Run with PowerShell"
-   - OR open PowerShell and run: `.\replace-citations.ps1`
+### Actually Running It
 
-3. **Select your file:**
-   - A file browser will open
-   - Select your `.tex` file
-   - Click "Open"
+1. Save the script above as `replace-citations.ps1` — put it wherever you like
+2. Right-click the file and choose **Run with PowerShell** (or open PowerShell and type `.\replace-citations.ps1`)
+3. A file browser pops up — pick your `.tex` file
+4. The script creates a new file called `yourfile_updated.tex` with all the replacements done
 
-4. **Done!**
-   - The script creates a new file: `yourfile_updated.tex`
-   - Your original file remains unchanged
+Your original file stays untouched, so there's no risk of losing anything.
 
-## Example: Before and After
+## See It in Action
 
-### Before (input.tex):
-```latex
-\documentclass{article}
+<details>
+<summary><strong>Click to see a Before → After example</strong></summary>
+
+<strong>Before (input.tex):</strong>
+
+<pre><code>\documentclass{article}
 \begin{document}
 
-The intersection of quantum computing and cryptographic systems presents
-fascinating challenges and opportunities for modern cybersecurity \cite{1}\cite{2}. 
+Some introductory text about the research topic \cite{1}\cite{2}.
 
-Machine learning algorithms have demonstrated remarkable capabilities in
-pattern recognition and predictive analytics \cite{4}, particularly when
-applied to environmental monitoring and climate analysis \cite{1}.
-
-Urban planners increasingly recognize the importance of integrating
-green infrastructure into city designs \cite{3}, while conservation
-biologists emphasize the critical role of biodiversity preservation
-in maintaining ecosystem stability \cite{5}.
+Further discussion on methodology and results \cite{2}, particularly when
+applied to analysis and evaluation \cite{1}.
 
 \bibliographystyle{plain}
 \bibliography{references}
 \end{document}
-```
+</code></pre>
 
-### After (input_updated.tex):
-```latex
-\documentclass{article}
+<strong>After (input_updated.tex):</strong>
+
+<pre><code>\documentclass{article}
 \begin{document}
 
-The intersection of quantum computing and cryptographic systems presents
-fascinating challenges and opportunities for modern cybersecurity \cite{martinez2023neural}\cite{johnson2024quantum}. 
+Some introductory text about the research topic \cite{smith2023keyword}\cite{doe2024analysis}.
 
-Machine learning algorithms have demonstrated remarkable capabilities in
-pattern recognition and predictive analytics \cite{anderson2021machine}, particularly when
-applied to environmental monitoring and climate analysis \cite{martinez2023neural}.
-
-Urban planners increasingly recognize the importance of integrating
-green infrastructure into city designs \cite{patel2022sustainable}, while conservation
-biologists emphasize the critical role of biodiversity preservation
-in maintaining ecosystem stability \cite{nguyen2023biodiversity}.
+Further discussion on methodology and results \cite{doe2024analysis}, particularly when
+applied to analysis and evaluation \cite{smith2023keyword}.
 
 \bibliographystyle{plain}
 \bibliography{references}
 \end{document}
-```
+</code></pre>
 
-## How It Works: The Technical Details
+</details>
 
-### 1. The Hashtable (Dictionary)
+## Under the Hood (For the Curious)
+
+You don't need to understand this part to use the script, but if you're curious about how it works, here's a quick breakdown.
+
+### The Hashtable
+
 ```powershell
 $citationMap = @{
-    '1' = 'martinez2023neural'
-    '2' = 'johnson2024quantum'
+    '1' = 'smith2023keyword'
+    '2' = 'doe2024analysis'
 }
 ```
-This creates a lookup table. When the script finds `\cite{1}`, it knows to replace it with `martinez2023neural`.
 
-### 2. The Regex Pattern
+Think of this as a dictionary. The script looks up each number and finds the matching citation key.
+
+### The Regex Pattern
+
 ```powershell
 $pattern = '\\cite\{(\d+)\}'
 ```
-This pattern matches:
-- `\\cite` - The literal text "\cite"
-- `\{` - Opening brace "{"
-- `(\d+)` - One or more digits (captured)
-- `\}` - Closing brace "}"
 
-### 3. The Replacement Logic
+This tells the script what to look for:
+- `\\cite` — the literal text `\cite`
+- `\{` and `\}` — the curly braces
+- `(\d+)` — one or more digits (this is what gets captured and replaced)
+
+### The Replacement
+
 ```powershell
 [regex]::Replace($content, $pattern, {
     param($match)
-    $number = $match.Groups[1].Value  # Extract the number
-    $key = $citationMap[$number]       # Look up the key
-    return "\cite{$key}"                # Replace with key
+    $number = $match.Groups[1].Value
+    $key = $citationMap[$number]
+    return "\cite{$key}"
 })
 ```
 
-For each match, it:
-1. Extracts the number from `\cite{1}` → `1`
-2. Looks up `1` in the map → `martinez2023neural`
-3. Replaces with `\cite{martinez2023neural}`
+For every match, the script grabs the number, looks it up in the dictionary, and swaps it with the real citation key.
 
-## Scaling Up: Working with Larger Bibliographies
+## What If I Have a Lot of References?
 
-For the example, we used 5 references. But what if you have 50, 100, or more?
-
-Simply extend the `$citationMap`:
+No problem. Just keep adding lines to the mapping:
 
 ```powershell
 $citationMap = @{
-    '1' = 'martinez2023neural'
-    '2' = 'johnson2024quantum'
-    '3' = 'patel2022sustainable'
-    # ... add as many as you need
-    '50' = 'thompson2024algorithms'
-    '100' = 'williams2023framework'
+    '1' = 'smith2023keyword'
+    '2' = 'doe2024analysis'
+    # ... keep going
+    '50' = 'lee2024algorithms'
+    '100' = 'wang2023method'
 }
 ```
 
-The script handles them all just as easily!
+The script handles them all the same way, whether you have 5 or 500.
 
-## Tips and Best Practices
+## A Few Tips from Experience
 
-### ✅ Do's
-- **Keep backups:** The script creates a new file, but always keep your original
-- **Test first:** Try with a small sample file before running on your full document
-- **Verify mappings:** Double-check that your citation numbers match your keys
-- **Use descriptive keys:** Keys like `martinez2023neural` are better than `ref1`
+**Do:**
+- Always test with a small file first before running it on your full thesis
+- Double-check your number-to-key mapping — a wrong mapping means wrong citations
+- Use meaningful citation keys like `smith2023keyword` instead of vague ones like `ref1`
 
-### ❌ Don'ts
-- **Don't use the same citation key twice** in your mapping
-- **Don't forget the quotes** around numbers in the hashtable: `'1'` not `1`
-- **Don't panic if you see warnings** - the script keeps original citations if no mapping is found
+**Don't:**
+- Reuse the same citation key for different numbers
+- Forget the quotes around numbers in the hashtable — write `'1'`, not `1`
+- Worry if you see a warning — it just means the script couldn't find a mapping for that number, and it leaves the original citation as-is
 
-## Troubleshooting Common Issues
+## Common Issues (and Quick Fixes)
 
-### Issue: "Scripts are disabled"
-**Solution:** Run PowerShell as Administrator and execute:
+**"Scripts are disabled on this system"**
+Run this in PowerShell as Admin:
 ```powershell
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-### Issue: "No citations were replaced"
-**Possible causes:**
-- Your citations don't use the format `\cite{number}`
-- Numbers in citations don't match numbers in your map
-- Check for spaces: `\cite{ 1 }` won't match (remove spaces)
+**"Nothing got replaced"**
+Check that your citations actually use the `\cite{number}` format. Also make sure there are no extra spaces inside the braces — `\cite{ 1 }` won't match.
 
-### Issue: "Warning: No mapping for citation X"
-**Solution:** You're using citation number X but haven't added it to `$citationMap`. Either:
-- Add the mapping
-- Or ignore it (the script leaves it unchanged)
+**"Warning: No mapping for citation X"**
+You're using citation number X in your document but haven't added it to the `$citationMap`. Either add it or leave it — the script won't break anything.
 
-## Advanced: Combining Multiple Citations
+## Bonus: Combining Multiple Citations
 
-The script also handles this automatically:
+The script handles back-to-back citations just fine:
 
-**Before:**
-```latex
-Multiple studies \cite{1}\cite{2}\cite{3} have shown...
-```
+<details>
+<summary><strong>Click to see an example</strong></summary>
 
-**After:**
-```latex
-Multiple studies \cite{martinez2023neural}\cite{johnson2024quantum}\cite{patel2022sustainable} have shown...
-```
+<strong>Before:</strong>
+<pre><code>Multiple studies \cite{1}\cite{2} have shown...</code></pre>
 
-**Pro tip:** You can combine these manually afterward:
-```latex
-Multiple studies \cite{martinez2023neural,johnson2024quantum,patel2022sustainable} have shown...
-```
-This renders as `[1,2,3]` instead of `[1][2][3]`.
+<strong>After:</strong>
+<pre><code>Multiple studies \cite{smith2023keyword}\cite{doe2024analysis} have shown...</code></pre>
 
-## Conclusion
+<strong>Quick tip:</strong> After running the script, you can manually merge these into a single cite command:
+<pre><code>Multiple studies \cite{smith2023keyword,doe2024analysis} have shown...</code></pre>
 
-Converting numeric citations to proper citation keys doesn't have to be a manual, time-consuming task. With this simple PowerShell script, you can:
+This gives you a cleaner output — [1,2] instead of [1][2].
 
-- ✅ Process hundreds of citations in seconds
-- ✅ Eliminate human error from manual find-replace
-- ✅ Maintain consistency across your document
-- ✅ Focus on your research instead of formatting
+</details>
 
-The best part? Once you set up the citation map, you can reuse the script for any document using the same bibliography.
+## Wrapping Up
+
+Look, nobody enjoys spending their afternoon doing find-and-replace on citation keys. This script handles it in seconds, and once you've set up the mapping, you can reuse it anytime you work with the same bibliography.
+
+Give it a try on your next paper — I think you'll be surprised how much time it saves.
 
 ---
 
-## Download the Script
+## Ready to Use It?
 
-You can save the complete script above, or modify it for your specific needs. The basic structure remains the same regardless of how many citations you have.
-
-**Next steps:**
-1. Copy the script to a `.ps1` file
-2. Update the `$citationMap` with your citations
-3. Run it on your LaTeX file
-4. Enjoy your properly formatted citations!
+1. Copy the script into a `.ps1` file
+2. Update the `$citationMap` with your own citations
+3. Run it on your `.tex` file
+4. That's it — you're done
 
 ---
 
-> **Tip:** Don't rush your journal selection. Take a few minutes to create your citation mapping correctly. It will save you hours of manual work later!
+> **Tip:** Take a few minutes to get your citation mapping right. It's worth the upfront effort — it'll save you hours down the road.
 {: .prompt-tip }
 
-> **Warning:** Always keep a backup of your original file before running the script, especially when working with your final thesis or dissertation!
+> **Warning:** Always keep a backup of your original `.tex` file before running any script on it, especially if it's your final thesis or dissertation!
 {: .prompt-warning }
 
 ---
 
-**Have questions or suggestions?** Feel free to share your experience in the comments below!
-
-**Happy LaTeXing!** 📝✨
-
----
-
-*Tags: LaTeX, PowerShell, Automation, Academic Writing, Bibliography Management, Research Tools, Citation Management*
-
-First, we need to create a mapping between the numbers you're using and the actual citation keys. Let's say you have this small bibliography:
-
-```bibtex
-%1
-@article{martinez2023neural,
-  title={Neural network approaches to climate modeling: A comprehensive review},
-  author={Martinez, Elena and Chen, Wei and O'Brien, Patrick},
-  journal={Nature Climate Change},
-  year={2023}
-}
-
-%2
-@inproceedings{johnson2024quantum,
-  title={Quantum computing applications in cryptography},
-  author={Johnson, Michael A and Lee, Sarah K},
-  booktitle={Proceedings of the ACM Conference on Computer Security},
-  pages={145--159},
-  year={2024}
-}
-
-%3
-@article{patel2022sustainable,
-  title={Sustainable urban development through green infrastructure},
-  author={Patel, Rajesh and Williams, Jennifer and Schmidt, Hans},
-  journal={Urban Studies},
-  volume={59},
-  number={8},
-  pages={1623--1641},
-  year={2022}
-}
-
-%4
-@book{anderson2021machine,
-  title={Machine Learning: Theory and Practice},
-  author={Anderson, Robert J},
-  publisher={MIT Press},
-  address={Cambridge, MA},
-  year={2021}
-}
-
-%5
-@article{nguyen2023biodiversity,
-  title={Biodiversity conservation in tropical rainforests: Challenges and opportunities},
-  author={Nguyen, Linh T and Silva, Carlos and Brown, Amanda},
-  journal={Conservation Biology},
-  volume={37},
-  number={2},
-  pages={412--428},
-  year={2023}
-}
-```
-
----
-
-## Step 2: The PowerShell Script
-
-Here's the complete script that does all the work for you:
-
-```powershell
-# LaTeX Citation Replacement Script
-# Replaces \cite{number} with \cite{citationkey}
-
-# Create the citation mapping
-$citationMap = @{
-    '1' = 'martinez2023neural'
-    '2' = 'johnson2024quantum'
-    '3' = 'patel2022sustainable'
-    '4' = 'anderson2021machine'
-    '5' = 'nguyen2023biodiversity'
-}
-
-# Interactive file selection
-Write-Host "Please select your LaTeX file..." -ForegroundColor Cyan
-Add-Type -AssemblyName System.Windows.Forms
-
-$openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
-$openFileDialog.Filter = "LaTeX files (*.tex)|*.tex|All files (*.*)|*.*"
-$openFileDialog.Title = "Select your LaTeX file"
-
-if ($openFileDialog.ShowDialog() -eq 'OK') {
-    $inputFile = $openFileDialog.FileName
-    $outputFile = $inputFile -replace '\.tex$', '_updated.tex'
-    
-    Write-Host "Selected: $inputFile" -ForegroundColor Green
-} else {
-    Write-Host "No file selected. Exiting." -ForegroundColor Red
-    exit
-}
-
-# Read the file
-Write-Host "`nProcessing file..." -ForegroundColor Cyan
-$content = Get-Content $inputFile -Raw
-
-# Count citations
-$beforeCount = ([regex]::Matches($content, '\\cite\{\d+\}')).Count
-Write-Host "Found $beforeCount numeric citations" -ForegroundColor Yellow
-
-# Replace citations using regex
-$pattern = '\\cite\{(\d+)\}'
-$result = [regex]::Replace($content, $pattern, {
-    param($match)
-    $number = $match.Groups[1].Value
-    $key = $citationMap[$number]
-    
-    if ($key) {
-        return "\cite{$key}"
-    } else {
-        Write-Host "Warning: No mapping for citation $number" -ForegroundColor Yellow
-        return $match.Value
-    }
-})
-
-# Save the result
-$result | Set-Content $outputFile -NoNewline
-
-# Show results
-Write-Host "`n✓ Replacement complete!" -ForegroundColor Green
-Write-Host "Output: $outputFile" -ForegroundColor Green
-
-Write-Host "`nPreview of replacements:" -ForegroundColor Magenta
-$matches = [regex]::Matches($result, '\\cite\{[a-z]+\d{4}[a-z]+\}') | Select-Object -First 3
-foreach ($m in $matches) {
-    Write-Host "  $($m.Value)" -ForegroundColor White
-}
-```
-
----
-
-## Step 3: How to Use the Script
-
-### First-Time Setup (One Time Only)
-
-1. **Enable PowerShell scripts:**
-   - Press `Windows + X`
-   - Click "Windows PowerShell (Admin)"
-   - Run: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
-   - Type `Y` and press Enter
-
-### Running the Script
-
-1. **Save the script:**
-   - Copy the script above
-   - Save it as `replace-citations.ps1` (anywhere on your computer)
-
-2. **Run it:**
-   - Right-click on `replace-citations.ps1`
-   - Click "Run with PowerShell"
-   - OR open PowerShell and run: `.\replace-citations.ps1`
-
-3. **Select your file:**
-   - A file browser will open
-   - Select your `.tex` file
-   - Click "Open"
-
-4. **Done!**
-   - The script creates a new file: `yourfile_updated.tex`
-   - Your original file remains unchanged
-
----
-
-## Example: Before and After
-
-### Before (input.tex):
-```latex
-\documentclass{article}
-\begin{document}
-
-The intersection of quantum computing and cryptographic systems presents
-fascinating challenges and opportunities for modern cybersecurity \cite{1}\cite{2}. 
-
-Machine learning algorithms have demonstrated remarkable capabilities in
-pattern recognition and predictive analytics \cite{4}, particularly when
-applied to environmental monitoring and climate analysis \cite{1}.
-
-Urban planners increasingly recognize the importance of integrating
-green infrastructure into city designs \cite{3}, while conservation
-biologists emphasize the critical role of biodiversity preservation
-in maintaining ecosystem stability \cite{5}.
-
-\bibliographystyle{plain}
-\bibliography{references}
-\end{document}
-```
-
-### After (input_updated.tex):
-```latex
-\documentclass{article}
-\begin{document}
-
-The intersection of quantum computing and cryptographic systems presents
-fascinating challenges and opportunities for modern cybersecurity \cite{martinez2023neural}\cite{johnson2024quantum}. 
-
-Machine learning algorithms have demonstrated remarkable capabilities in
-pattern recognition and predictive analytics \cite{anderson2021machine}, particularly when
-applied to environmental monitoring and climate analysis \cite{martinez2023neural}.
-
-Urban planners increasingly recognize the importance of integrating
-green infrastructure into city designs \cite{patel2022sustainable}, while conservation
-biologists emphasize the critical role of biodiversity preservation
-in maintaining ecosystem stability \cite{nguyen2023biodiversity}.
-
-\bibliographystyle{plain}
-\bibliography{references}
-\end{document}
-```
-
----
-
-## How It Works: The Technical Details
-
-### 1. The Hashtable (Dictionary)
-```powershell
-$citationMap = @{
-    '1' = 'martinez2023neural'
-    '2' = 'johnson2024quantum'
-}
-```
-This creates a lookup table. When the script finds `\cite{1}`, it knows to replace it with `martinez2023neural`.
-
-### 2. The Regex Pattern
-```powershell
-$pattern = '\\cite\{(\d+)\}'
-```
-This pattern matches:
-- `\\cite` - The literal text "\cite"
-- `\{` - Opening brace "{"
-- `(\d+)` - One or more digits (captured)
-- `\}` - Closing brace "}"
-
-### 3. The Replacement Logic
-```powershell
-[regex]::Replace($content, $pattern, {
-    param($match)
-    $number = $match.Groups[1].Value  # Extract the number
-    $key = $citationMap[$number]       # Look up the key
-    return "\cite{$key}"                # Replace with key
-})
-```
-
-For each match, it:
-1. Extracts the number from `\cite{1}` → `1`
-2. Looks up `1` in the map → `martinez2023neural`
-3. Replaces with `\cite{martinez2023neural}`
-
----
-
-## Scaling Up: Working with Larger Bibliographies
-
-For the example, we used 5 references. But what if you have 50, 100, or more?
-
-Simply extend the `$citationMap`:
-
-```powershell
-$citationMap = @{
-    '1' = 'martinez2023neural'
-    '2' = 'johnson2024quantum'
-    '3' = 'patel2022sustainable'
-    # ... add as many as you need
-    '50' = 'thompson2024algorithms'
-    '100' = 'williams2023framework'
-}
-```
-
-The script handles them all just as easily!
-
----
-
-## Tips and Best Practices
-
-### ✅ Do's
-- **Keep backups:** The script creates a new file, but always keep your original
-- **Test first:** Try with a small sample file before running on your full document
-- **Verify mappings:** Double-check that your citation numbers match your keys
-- **Use descriptive keys:** Keys like `martinez2023neural` are better than `ref1`
-
-### ❌ Don'ts
-- **Don't use the same citation key twice** in your mapping
-- **Don't forget the quotes** around numbers in the hashtable: `'1'` not `1`
-- **Don't panic if you see warnings** - the script keeps original citations if no mapping is found
-
----
-
-## Troubleshooting Common Issues
-
-### Issue: "Scripts are disabled"
-**Solution:** Run PowerShell as Administrator and execute:
-```powershell
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-### Issue: "No citations were replaced"
-**Possible causes:**
-- Your citations don't use the format `\cite{number}`
-- Numbers in citations don't match numbers in your map
-- Check for spaces: `\cite{ 1 }` won't match (remove spaces)
-
-### Issue: "Warning: No mapping for citation X"
-**Solution:** You're using citation number X but haven't added it to `$citationMap`. Either:
-- Add the mapping
-- Or ignore it (the script leaves it unchanged)
-
----
-
-## Advanced: Combining Multiple Citations
-
-The script also handles this automatically:
-
-**Before:**
-```latex
-Multiple studies \cite{1}\cite{2}\cite{3} have shown...
-```
-
-**After:**
-```latex
-Multiple studies \cite{martinez2023neural}\cite{johnson2024quantum}\cite{patel2022sustainable} have shown...
-```
-
-**Pro tip:** You can combine these manually afterward:
-```latex
-Multiple studies \cite{martinez2023neural,johnson2024quantum,patel2022sustainable} have shown...
-```
-This renders as `[1,2,3]` instead of `[1][2][3]`.
-
----
-
-## Conclusion
-
-Converting numeric citations to proper citation keys doesn't have to be a manual, time-consuming task. With this simple PowerShell script, you can:
-
-- ✅ Process hundreds of citations in seconds
-- ✅ Eliminate human error from manual find-replace
-- ✅ Maintain consistency across your document
-- ✅ Focus on your research instead of formatting
-
-The best part? Once you set up the citation map, you can reuse the script for any document using the same bibliography.
-
----
-
-## Download the Script
-
-You can save the complete script above, or modify it for your specific needs. The basic structure remains the same regardless of how many citations you have.
-
-**Next steps:**
-1. Copy the script to a `.ps1` file
-2. Update the `$citationMap` with your citations
-3. Run it on your LaTeX file
-4. Enjoy your properly formatted citations!
+**Got questions or ran into something unexpected?** Drop a comment below — happy to help.
