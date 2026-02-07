@@ -1,1 +1,12 @@
-meta: ""
+copyright:
+  brief: >-
+    Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+  verbose: >-
+    Except where otherwise noted, the blog posts on this site are licensed
+    under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.
+  license:
+    template: This post is licensed under :LICENSE_NAME by the author.
+    name: CC BY 4.0
+    link: https://creativecommons.org/licenses/by/4.0/
+
+meta: "Using the :THEME theme for :PLATFORM."
