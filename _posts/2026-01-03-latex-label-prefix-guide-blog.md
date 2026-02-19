@@ -28,10 +28,13 @@ Manual checking across 50+ pages with multiple revisions becomes impractical.
 - **Comment-aware**: Ignores both full-line and inline comments
 - **Sequence-preserving**: Shows labels in document order
 - **Comprehensive**: Checks figures, tables, equations, sections, and citations
-- **All major reference commands**: Supports `\ref`, `\autoref`, `\Autoref`, `\cref`, `\Cref`, `\vref`, `\pageref`, `\nameref`, `\labelcref`, and `\eqref`
+- **All major reference commands**: Supports all standard variants — `\ref`, `\autoref`,
+  `\Autoref`, `\cref`, `\Cref`, `\vref`, `\pageref`, `\nameref`, `\labelcref`, `\eqref`
 - **Multi-key refs**: Handles `\cref{fig:a,fig:b}` style calls (cleveref)
 - **biblatex support**: Detects `\addbibresource{}` in addition to `\bibliography{}`
-- **Broad citation coverage**: Recognises `\cite`, `\citep`, `\citet`, `\citealt`, `\citealp`, `\citeauthor`, `\citeyear`, `\parencite`, `\textcite`, `\footcite`, `\autocite`, and starred variants
+- **Broad citation coverage**: Covers natbib (`\cite`, `\citep`, `\citet`, `\citealt`,
+  `\citealp`, `\citeauthor`, `\citeyear`) and biblatex (`\parencite`, `\textcite`,
+  `\footcite`, `\autocite`) including starred variants
 - **Lightweight**: Pure bash, no dependencies
 - **Fast**: Processes typical manuscripts in less than one second
 
@@ -243,8 +246,10 @@ Not matched (correctly excluded):
 The citation section captures all common natbib and biblatex commands, including multi-key calls:
 
 ```bash
+NATBIB='\\cite(p|t|alt|alp|author|year|yearpar|num|s)?\*?\{[^}]+\}'
+BIBLATEX='\\(parencite|textcite|footcite|autocite)\*?\{[^}]+\}'
 CITATIONS=$(echo "$TEXCONTENT" \
-    | grep -oP '\\cite(p|t|alt|alp|author|year|yearpar|num|s)?\*?\{[^}]+\}|\\(parencite|textcite|footcite|autocite)\*?\{[^}]+\}' \
+    | grep -oP "$NATBIB|$BIBLATEX" \
     | grep -oP '\{[^}]+\}' \
     | tr -d '{}' \
     | tr ',' '\n' \
@@ -410,13 +415,30 @@ Download and run `./sync-and-check.sh` from your project directory:
 
 ## Comparison with Alternatives
 
-| Tool | Pros | Cons | Best For |
-|------|------|------|----------|
-| **This script** | Fast, customizable, comment-aware, preserves order, broad ref/cite support | Single file only | Quick audits, CI/CD |
-| `refcheck` package | LaTeX-integrated, visual markers | Must recompile, clutters PDF | During writing |
-| `chktex` | Comprehensive linting, many checks | Verbose, complex output | Deep analysis |
-| VS Code LaTeX Workshop | Real-time, editor-integrated | Editor-specific, no batch | Active editing |
-| Python scripts | Very flexible, HTML reports | Slower, requires Python | Custom workflows |
+**This script**
+: Fast, comment-aware, preserves label order, broad ref/cite command support
+: ⚠ Single file only
+: Best for: quick audits, CI/CD pipelines
+
+**`refcheck` package**
+: LaTeX-integrated; adds visual markers in the PDF margin
+: ⚠ Requires recompilation; clutters the PDF output
+: Best for: checking during active writing
+
+**`chktex`**
+: Comprehensive linting with many rule-based checks
+: ⚠ Verbose output; steep learning curve
+: Best for: deep style and syntax analysis
+
+**VS Code LaTeX Workshop**
+: Real-time feedback integrated directly in the editor
+: ⚠ Editor-specific; no batch or CI support
+: Best for: active editing sessions
+
+**Python scripts**
+: Highly flexible; can produce HTML reports and custom output
+: ⚠ Slower; requires a Python environment
+: Best for: custom or complex workflows
 
 ## Real-World Case Study
 

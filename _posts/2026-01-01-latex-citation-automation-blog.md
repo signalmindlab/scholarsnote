@@ -15,12 +15,10 @@ When working across reference managers, collaborators, or export tools, LaTeX do
 
 During manuscript preparation, a mismatch between citation format and bibliography keys is common:
 
-| Issue | Example | Impact |
-|-------|---------|--------|
-| Numeric citations in `.tex` | `\cite{1}`, `\cite{2}` | Does not compile with named `.bib` keys |
-| Named keys in `.bib` | `smith2023keyword` | Mismatch causes undefined citation warnings |
-| Manual replacement | Ctrl+H per citation | Time-consuming, introduces errors |
-| Large reference lists | 50–100+ citations | Manual approach becomes impractical |
+- **Numeric citations in `.tex`** — `\cite{1}`, `\cite{2}` do not compile with named `.bib` keys.
+- **Named keys in `.bib`** — `smith2023keyword` causes undefined citation warnings when the `.tex` uses numbers.
+- **Manual replacement** — Ctrl+H per citation is time-consuming and introduces errors.
+- **Large reference lists** — 50–100+ citations make the manual approach impractical.
 
 ## The Solution
 
@@ -204,12 +202,20 @@ The script processes all entries in a single pass regardless of document size.
 
 ## Troubleshooting
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| "Scripts are disabled on this system" | Execution policy not set | Run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` as Admin |
-| Nothing got replaced | Citations have spaces: `\cite{ 1 }` | Remove spaces inside braces in the `.tex` file |
-| "Warning: No mapping for citation X" | Number X not in `$citationMap` | Add the entry, or leave — original citation is preserved |
-| Output file not found | File browser was cancelled | Re-run and select a file when the dialog opens |
+**"Scripts are disabled on this system"**
+Execution policy not set. Run as Admin:
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**Nothing got replaced**
+Citations may have spaces: `\cite{ 1 }`. Remove spaces inside braces in the `.tex` file.
+
+**"Warning: No mapping for citation X"**
+Number X is not in `$citationMap`. Add the entry, or leave it — the original citation is preserved.
+
+**Output file not found**
+The file browser was cancelled. Re-run and select a file when the dialog opens.
 
 ## Best Practices
 
@@ -229,11 +235,13 @@ The script processes all entries in a single pass regardless of document size.
 ```bibtex
 @misc{samad2026latexcitation,
   author       = {Samad, Md Abdus},
-  title        = {LaTeX Citation Key Replacement: PowerShell Script to Convert Numeric Citations},
+  title        = {LaTeX Citation Key Replacement: PowerShell
+                  Script to Convert Numeric Citations},
   year         = {2026},
   month        = jan,
   howpublished = {ScholarsNote},
-  url          = {https://www.scholarsnote.org/posts/latex-citation-automation-blog/},
+  url          = {https://www.scholarsnote.org/posts/
+                  latex-citation-automation-blog/},
   doi          = {10.59350/XXXXXXXX-XXXXX},
   note         = {Accessed: 2026-01-01}
 }
