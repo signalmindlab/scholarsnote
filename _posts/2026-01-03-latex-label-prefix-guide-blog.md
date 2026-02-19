@@ -300,54 +300,15 @@ diff before_revision.log after_revision.log
 
 ### 3. Git Pre-commit Hook
 
-Add to `.git/hooks/pre-commit`:
+Download and copy to `.git/hooks/pre-commit`, then run `chmod +x .git/hooks/pre-commit`:
 
-```bash
-#!/bin/bash
-
-# Run check
-./check_latex_refs.sh main.tex > ref_check.log
-
-# Count unreferenced items
-UNREFERENCED=$(grep -c "^  " ref_check.log)
-
-if [ $UNREFERENCED -gt 0 ]; then
-    echo "Warning: $UNREFERENCED unreferenced items found"
-    cat ref_check.log
-
-    read -p "Continue commit? (y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
-fi
-```
+[**Download latex-pre-commit-hook.sh**](/assets/files/latex-pre-commit-hook.sh)
 
 ### 4. Makefile Integration
 
-```makefile
-# Makefile
+Download and save as `Makefile` in your project directory:
 
-.PHONY: check clean all
-
-all: manuscript.pdf check
-
-manuscript.pdf: manuscript.tex
-	pdflatex manuscript.tex
-	bibtex manuscript
-	pdflatex manuscript.tex
-	pdflatex manuscript.tex
-
-check:
-	@./check_latex_refs.sh manuscript.tex
-
-clean:
-	rm -f *.aux *.log *.bbl *.blg *.out *.toc
-
-audit:
-	@./check_latex_refs.sh manuscript.tex > audit_$(shell date +%Y%m%d).log
-	@cat audit_$(shell date +%Y%m%d).log
-```
+[**Download latex-Makefile**](/assets/files/latex-Makefile)
 
 **Usage:**
 ```bash
@@ -358,44 +319,9 @@ make audit        # Generate timestamped audit
 
 ### 5. Pre-submission Checklist Script
 
-Create `pre_submit.sh`:
+Download and run `./pre-submit.sh` from your project directory:
 
-```bash
-#!/bin/bash
-
-echo "Pre-submission Checklist"
-echo "========================"
-
-# 1. Reference check
-echo "1. Checking references..."
-./check_latex_refs.sh manuscript.tex > ref_audit.log
-
-# 2. Count issues
-ISSUES=$(grep -c "^  " ref_audit.log)
-if [ $ISSUES -eq 0 ]; then
-    echo "   No unreferenced items"
-else
-    echo "   $ISSUES unreferenced items found"
-    cat ref_audit.log
-fi
-
-# 3. Check compilation
-echo "2. Checking compilation..."
-pdflatex -interaction=nonstopmode manuscript.tex > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-    echo "   Compiles successfully"
-else
-    echo "   Compilation errors found"
-fi
-
-# 4. Check bibliography
-echo "3. Checking bibliography..."
-bibtex manuscript > /dev/null 2>&1
-echo "   Bibliography processed"
-
-echo "========================"
-echo "Checklist complete!"
-```
+[**Download pre-submit.sh**](/assets/files/pre-submit.sh)
 
 ## Extensions and Customizations
 
@@ -450,141 +376,39 @@ fi
 
 ### Export to CSV
 
-Create a CSV export function:
+[**Download latex-refs-to-csv.sh**](/assets/files/latex-refs-to-csv.sh)
 
 ```bash
-#!/bin/bash
-# Export unreferenced items to CSV
-
-TEXFILE=$1
-OUTFILE="${TEXFILE%.tex}_unreferenced.csv"
-
-# Run the check and extract unreferenced items
-./check_latex_refs.sh "$TEXFILE" > /tmp/ref_check.log
-
-# Create CSV header
-echo "Type,Label,Section" > "$OUTFILE"
-
-# Extract and format
-grep "^  tab:" /tmp/ref_check.log | sed 's/^  /table,/' >> "$OUTFILE"
-grep "^  fig:" /tmp/ref_check.log | sed 's/^  /figure,/' >> "$OUTFILE"
-grep "^  eq:"  /tmp/ref_check.log | sed 's/^  /equation,/' >> "$OUTFILE"
-grep "^  sec:" /tmp/ref_check.log | sed 's/^  /section,/' >> "$OUTFILE"
-
-echo "CSV exported to: $OUTFILE"
+./latex-refs-to-csv.sh manuscript.tex
 ```
 
 ### JSON Output
 
-Add JSON export capability:
+[**Download latex-refs-to-json.sh**](/assets/files/latex-refs-to-json.sh)
 
 ```bash
-#!/bin/bash
-# Add --json flag support
-
-if [ "$2" == "--json" ]; then
-    # Extract data
-    TAB_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{tab:\K[^}]+' | awk '!seen[$0]++')
-    TAB_REFS=$(refs_for_prefix "tab")
-
-    # Build unreferenced array
-    UNREF_TABS=$(comm -23 <(echo "$TAB_LABELS" | sort) <(echo "$TAB_REFS" | sort) | \
-        awk '{printf "\"%s\",", $0}' | sed 's/,$//')
-
-    # Output JSON
-    cat << EOF
-{
-  "file": "$TEXFILE",
-  "timestamp": "$(date -Iseconds)",
-  "tables": {
-    "total_labels": $(echo "$TAB_LABELS" | grep -v '^$' | wc -l),
-    "total_refs": $(echo "$TAB_REFS" | grep -v '^$' | wc -l),
-    "unreferenced": [$UNREF_TABS]
-  }
-}
-EOF
-fi
+./latex-refs-to-json.sh manuscript.tex
 ```
 
 ## Workflow Integration Examples
 
 ### 1. Continuous Integration (CI)
 
-For GitHub Actions (`.github/workflows/latex-check.yml`):
+Download and place at `.github/workflows/latex-check.yml` in your repository:
 
-```yaml
-name: LaTeX Reference Check
-
-on: [push, pull_request]
-
-jobs:
-  check-refs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Run reference checker
-        run: |
-          chmod +x check_latex_refs.sh
-          ./check_latex_refs.sh manuscript.tex
-
-      - name: Count issues
-        run: |
-          ISSUES=$(./check_latex_refs.sh manuscript.tex | grep "^  " | wc -l)
-          echo "Found $ISSUES unreferenced items"
-          if [ $ISSUES -gt 5 ]; then
-            echo "Too many unreferenced items!"
-            exit 1
-          fi
-```
+[**Download latex-check.yml**](/assets/files/latex-check.yml)
 
 ### 2. VS Code Task
 
-Add to `.vscode/tasks.json`:
+Download and place at `.vscode/tasks.json` in your project:
 
-```json
-{
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Check LaTeX References",
-      "type": "shell",
-      "command": "./check_latex_refs.sh",
-      "args": ["${file}"],
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      }
-    }
-  ]
-}
-```
+[**Download vscode-tasks.json**](/assets/files/vscode-tasks.json)
 
 ### 3. Overleaf/Git Sync
 
-For projects synced between Overleaf and Git:
+Download and run `./sync-and-check.sh` from your project directory:
 
-```bash
-#!/bin/bash
-# sync_and_check.sh
-
-# Pull from Overleaf
-git pull origin master
-
-# Run check
-./check_latex_refs.sh main.tex > ref_check.log
-
-# If clean, push changes
-if [ $(grep -c "^  " ref_check.log) -eq 0 ]; then
-    git add .
-    git commit -m "Update: references checked"
-    git push origin master
-else
-    echo "Unreferenced items found. Fix before pushing."
-    cat ref_check.log
-fi
-```
+[**Download sync-and-check.sh**](/assets/files/sync-and-check.sh)
 
 ## Comparison with Alternatives
 

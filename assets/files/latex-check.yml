@@ -1,0 +1,26 @@
+# latex-check.yml — GitHub Actions workflow for LaTeX reference checking
+# Installation: copy to .github/workflows/latex-check.yml in your repository
+
+name: LaTeX Reference Check
+
+on: [push, pull_request]
+
+jobs:
+  check-refs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run reference checker
+        run: |
+          chmod +x check_latex_refs.sh
+          ./check_latex_refs.sh manuscript.tex
+
+      - name: Count issues
+        run: |
+          ISSUES=$(./check_latex_refs.sh manuscript.tex | grep "^  " | wc -l)
+          echo "Found $ISSUES unreferenced items"
+          if [ $ISSUES -gt 5 ]; then
+            echo "Too many unreferenced items!"
+            exit 1
+          fi

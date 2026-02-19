@@ -1,0 +1,25 @@
+# latex-Makefile — Makefile for LaTeX build with reference checking
+# Usage: copy to your project directory as 'Makefile'
+#   make              # Compile and check
+#   make check        # Run reference check only
+#   make audit        # Generate timestamped audit log
+
+.PHONY: check clean all
+
+all: manuscript.pdf check
+
+manuscript.pdf: manuscript.tex
+	pdflatex manuscript.tex
+	bibtex manuscript
+	pdflatex manuscript.tex
+	pdflatex manuscript.tex
+
+check:
+	@./check_latex_refs.sh manuscript.tex
+
+clean:
+	rm -f *.aux *.log *.bbl *.blg *.out *.toc
+
+audit:
+	@./check_latex_refs.sh manuscript.tex > audit_$(shell date +%Y%m%d).log
+	@cat audit_$(shell date +%Y%m%d).log
