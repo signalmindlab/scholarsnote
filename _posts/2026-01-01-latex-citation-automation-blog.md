@@ -1,143 +1,153 @@
 ---
-title: How to Automatically Replace Numeric Citations with Citation Keys in LaTeX Using PowerShell
-description: A practical guide for researchers and students to automate the conversion of numeric citations to proper citation keys in LaTeX documents using PowerShell scripting.
+title: "LaTeX Citation Key Replacement: PowerShell Script to Convert Numeric Citations"
+description: "A practical PowerShell script for researchers to automate the conversion of numeric citations to proper citation keys in LaTeX documents."
 date: 2026-01-01 10:00:00 +0900
 categories: [Research, LaTeX]
-tags: [latex, powershell, automation, academic writing, bibliography management, research tools, citation management]
+tags: [latex, powershell, automation, academic-writing, bibliography-management, citation-management]
+author: Md Abdus Samad
+doi: "10.59350/XXXXXXXX-XXXXX"
 pin: false
 ---
 
-**We've all been there.** You're wrapping up a paper in LaTeX, and you realize your document is full of `\cite{1}`, `\cite{2}`, `\cite{3}`... but your `.bib` file uses proper keys like `smith2023keyword`. Now you're staring at dozens — maybe hundreds — of citations that need fixing, one by one.
+When working across reference managers, collaborators, or export tools, LaTeX documents often end up with numeric citations such as `\cite{1}`, `\cite{2}` that do not match the proper citation keys in the `.bib` file. Manually replacing each citation in a large manuscript is tedious and error-prone. This PowerShell script automates the entire process: it reads a user-defined number-to-key mapping, replaces every numeric citation in the `.tex` file, and writes the result to a new file — leaving the original untouched.
 
-I ran into this exact problem while working on a manuscript last year. After spending way too long doing it by hand (and making a few mistakes along the way), I wrote a short PowerShell script to handle it automatically. It saved me a ton of time, and I think it might help you too.
+## The Problem
 
-## What's the Problem, Exactly?
+During manuscript preparation, a mismatch between citation format and bibliography keys is common:
 
-Here's what it usually looks like. Your `.tex` file has something like this:
+| Issue | Example | Impact |
+|-------|---------|--------|
+| Numeric citations in `.tex` | `\cite{1}`, `\cite{2}` | Does not compile with named `.bib` keys |
+| Named keys in `.bib` | `smith2023keyword` | Mismatch causes undefined citation warnings |
+| Manual replacement | Ctrl+H per citation | Time-consuming, introduces errors |
+| Large reference lists | 50–100+ citations | Manual approach becomes impractical |
 
-```latex
-Recent advances have revolutionized the field \cite{1}\cite{2}.
-```
+## The Solution
 
-Meanwhile, your `.bib` file has proper entries like:
+### Features
 
-```bibtex
-@article{smith2023keyword,
-  title={Title of the First Paper},
-  author={Smith, John and Lee, Jane},
-  journal={Journal Name},
-  year={2023}
-}
-```
+- **Interactive file selection**: Opens a file browser to select your `.tex` file — no command-line path needed
+- **Mapping-based replacement**: Define each number-to-key pair once in a simple hashtable
+- **Regex-powered**: Handles all `\cite{N}` occurrences in a single pass
+- **Non-destructive**: Saves output as `yourfile_updated.tex`; original is never modified
+- **Warning on missing keys**: Reports unmapped citation numbers without stopping
+- **Preview on completion**: Shows a sample of the replaced citation keys
 
-See the mismatch? Your document says `\cite{1}`, but it should say `\cite{smith2023keyword}`. When you only have a few references, it's no big deal. But when you have 50 or 100? That's where things get painful.
+## Installation and Usage
 
-## The Fix: A Simple PowerShell Script
+Follow these steps to use the citation replacement script:
 
-The idea is straightforward — we tell the script which number maps to which citation key, and it does all the replacing for us. No more Ctrl+H marathons.
+1. **Download the script** — Download `replace-citations.ps1` (link below) and save it anywhere on your PC
+2. **Edit the mapping** — Open the script in any text editor and update the `$citationMap` section
+3. **Run the script** — Right-click the file and choose **Run with PowerShell**
 
-### Before You Start
+### Step 1: Download the Script
 
-You'll need:
-- A Windows PC (PowerShell is already there)
-- Your `.tex` file with numeric citations
-- Your `.bib` file so you know the correct keys
-- About 5–10 minutes
+[**Download replace-citations.ps1**](/assets/files/replace-citations.ps1){: .btn .btn-primary }
 
-## Step 1: Set Up Your Citation Mapping
+Open the downloaded file in any text editor (Notepad, VS Code, etc.) and update the `$citationMap` section with your own number-to-key pairs before running.
 
-Take a look at your `.bib` file and note down which number corresponds to which citation key. For example:
+### Step 2: Edit the Citation Mapping
+
+Look up each citation number in your `.bib` file and add the corresponding key to the mapping. For example, if your `.bib` file contains:
 
 ```bibtex
 %1
 @article{smith2023keyword,
-  title={Title of the First Paper},
-  author={Smith, John and Lee, Jane},
-  journal={Journal Name One},
-  year={2023}
+  author = {Smith, John and Lee, Jane},
+  title  = {Title of the First Paper},
+  year   = {2023}
 }
 
 %2
 @inproceedings{doe2024analysis,
-  title={Title of the Second Paper},
-  author={Doe, Alice and Park, James},
-  booktitle={Proceedings of the Conference Name},
-  pages={100--115},
-  year={2024}
+  author    = {Doe, Alice and Park, James},
+  title     = {Title of the Second Paper},
+  booktitle = {Proceedings of the Conference Name},
+  year      = {2024}
 }
 ```
 
-So `1` maps to `smith2023keyword`, `2` maps to `doe2024analysis`, and so on. Just keep adding entries for as many references as you have.
+Edit the `$citationMap` block in the script accordingly:
 
-## Step 2: The PowerShell Script
+```powershell
+$citationMap = @{
+    '1' = 'smith2023keyword'
+    '2' = 'doe2024analysis'
+    # add more entries as needed
+}
+```
 
-Download the script below, open it in any text editor, and update the `$citationMap` section with your own citation keys before running it.
+> Always wrap citation numbers in single quotes: `'1'`, not `1`.
+{: .prompt-tip }
 
-[**Download replace-citations.ps1**](/assets/files/replace-citations.ps1){: .btn .btn-primary }
+### Step 3: One-Time PowerShell Setup
 
-## Step 3: Running the Script
-
-### One-Time Setup
-
-If you've never run a PowerShell script before, you'll need to allow it first. Just do this once:
+If you have not run a PowerShell script before, enable script execution once:
 
 1. Press `Windows + X` and click **Windows PowerShell (Admin)**
-2. Type: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
-3. Hit `Y` and Enter
+2. Run: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
+3. Press `Y` and Enter
 
-That's it. You won't need to do this again.
+This is a one-time step and does not need to be repeated.
 
-### Actually Running It
+### Step 4: Run the Script
 
-1. Save the script above as `replace-citations.ps1` — put it wherever you like
-2. Right-click the file and choose **Run with PowerShell** (or open PowerShell and type `.\replace-citations.ps1`)
-3. A file browser pops up — pick your `.tex` file
-4. The script creates a new file called `yourfile_updated.tex` with all the replacements done
+Right-click `replace-citations.ps1` and choose **Run with PowerShell**, or run from a terminal:
 
-Your original file stays untouched, so there's no risk of losing anything.
+```powershell
+.\replace-citations.ps1
+```
 
-## See It in Action
+A file browser opens — select your `.tex` file. The script processes it and saves the result as `yourfile_updated.tex` in the same folder.
 
-<details>
-<summary><strong>Click to see a Before → After example</strong></summary>
+> Always keep a backup of your original `.tex` file before running any automated replacement, especially for final thesis or dissertation submissions.
+{: .prompt-warning }
 
-<strong>Before (input.tex):</strong>
+## Example Output
 
-<pre><code>\documentclass{article}
-\begin{document}
+After running the script, the terminal displays a summary:
 
-Some introductory text about the research topic \cite{1}\cite{2}.
+```
+Please select your LaTeX file...
+Selected: C:\Projects\paper\manuscript.tex
 
-Further discussion on methodology and results \cite{2}, particularly when
-applied to analysis and evaluation \cite{1}.
+Processing file...
+Found 52 numeric citations
 
-\bibliographystyle{plain}
-\bibliography{references}
-\end{document}
-</code></pre>
+✓ Replacement complete!
+Output: C:\Projects\paper\manuscript_updated.tex
 
-<strong>After (input_updated.tex):</strong>
+Preview of replacements:
+  \cite{smith2023keyword}
+  \cite{doe2024analysis}
+  \cite{lee2024algorithms}
+```
 
-<pre><code>\documentclass{article}
-\begin{document}
+## Before and After
 
-Some introductory text about the research topic \cite{smith2023keyword}\cite{doe2024analysis}.
+**Before (`manuscript.tex`):**
 
-Further discussion on methodology and results \cite{doe2024analysis}, particularly when
-applied to analysis and evaluation \cite{smith2023keyword}.
+```latex
+Recent advances have been studied \cite{1}\cite{2}.
+Further results confirmed the methodology \cite{2}.
+```
 
-\bibliographystyle{plain}
-\bibliography{references}
-\end{document}
-</code></pre>
+**After (`manuscript_updated.tex`):**
 
-</details>
+```latex
+Recent advances have been studied \cite{smith2023keyword}\cite{doe2024analysis}.
+Further results confirmed the methodology \cite{doe2024analysis}.
+```
 
-## Under the Hood (For the Curious)
+> Back-to-back citations like `\cite{A}\cite{B}` can be merged into `\cite{A,B}` for cleaner output (e.g., [1,2] instead of [1][2]).
+{: .prompt-tip }
 
-You don't need to understand this part to use the script, but if you're curious about how it works, here's a quick breakdown.
+## Technical Deep Dive
 
-### The Hashtable
+### How It Works
+
+#### 1. The Citation Mapping
 
 ```powershell
 $citationMap = @{
@@ -146,117 +156,85 @@ $citationMap = @{
 }
 ```
 
-Think of this as a dictionary. The script looks up each number and finds the matching citation key.
+The hashtable acts as a lookup dictionary. For each numeric citation found in the document, the script looks up the corresponding key and substitutes it.
 
-### The Regex Pattern
+#### 2. The Regex Pattern
 
 ```powershell
 $pattern = '\\cite\{(\d+)\}'
 ```
 
-This tells the script what to look for:
-- `\\cite` — the literal text `\cite`
-- `\{` and `\}` — the curly braces
-- `(\d+)` — one or more digits (this is what gets captured and replaced)
+| Component | Meaning |
+|-----------|---------|
+| `\\cite` | Matches the literal text `\cite` |
+| `\{` and `\}` | Matches the surrounding curly braces |
+| `(\d+)` | Captures one or more digits as the citation number |
 
-### The Replacement
+#### 3. The Replacement Logic
 
 ```powershell
-[regex]::Replace($content, $pattern, {
+$result = [regex]::Replace($content, $pattern, {
     param($match)
     $number = $match.Groups[1].Value
-    $key = $citationMap[$number]
-    return "\cite{$key}"
+    $key    = $citationMap[$number]
+    if ($key) { return "\cite{$key}" }
+    else {
+        Write-Host "Warning: No mapping for citation $number" -ForegroundColor Yellow
+        return $match.Value
+    }
 })
 ```
 
-For every match, the script grabs the number, looks it up in the dictionary, and swaps it with the real citation key.
+For each match, the script extracts the captured number, looks it up in the hashtable, and returns the replacement. If a number has no mapping, the original citation is preserved and a warning is printed.
 
-## What If I Have a Lot of References?
+## Scaling to Large Reference Lists
 
-No problem. Just keep adding lines to the mapping:
+The mapping supports any number of entries. Add one line per citation:
 
 ```powershell
 $citationMap = @{
-    '1' = 'smith2023keyword'
-    '2' = 'doe2024analysis'
-    # ... keep going
-    '50' = 'lee2024algorithms'
+    '1'   = 'smith2023keyword'
+    '2'   = 'doe2024analysis'
+    '50'  = 'lee2024algorithms'
     '100' = 'wang2023method'
 }
 ```
 
-The script handles them all the same way, whether you have 5 or 500.
+The script processes all entries in a single pass regardless of document size.
 
-## A Few Tips from Experience
+## Troubleshooting
 
-**Do:**
-- Always test with a small file first before running it on your full thesis
-- Double-check your number-to-key mapping — a wrong mapping means wrong citations
-- Use meaningful citation keys like `smith2023keyword` instead of vague ones like `ref1`
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| "Scripts are disabled on this system" | Execution policy not set | Run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` as Admin |
+| Nothing got replaced | Citations have spaces: `\cite{ 1 }` | Remove spaces inside braces in the `.tex` file |
+| "Warning: No mapping for citation X" | Number X not in `$citationMap` | Add the entry, or leave — original citation is preserved |
+| Output file not found | File browser was cancelled | Re-run and select a file when the dialog opens |
 
-**Don't:**
-- Reuse the same citation key for different numbers
-- Forget the quotes around numbers in the hashtable — write `'1'`, not `1`
-- Worry if you see a warning — it just means the script couldn't find a mapping for that number, and it leaves the original citation as-is
+## Best Practices
 
-## Common Issues (and Quick Fixes)
+- **Test first**: Run the script on a short sample file before applying it to a full manuscript
+- **Verify the mapping**: A wrong number-to-key assignment produces incorrect citations silently
+- **Use descriptive keys**: Prefer `smith2023keyword` over `ref1` for long-term readability
+- **No duplicate keys**: Each citation number must map to exactly one unique key
 
-**"Scripts are disabled on this system"**
-Run this in PowerShell as Admin:
-```powershell
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+---
+
+## How to Cite
+
+> Samad, M. A. (2026). LaTeX citation key replacement: PowerShell script to convert numeric citations. *ScholarsNote*. <https://doi.org/10.59350/XXXXXXXX-XXXXX>
+
+**BibTeX:**
+
+```bibtex
+@misc{samad2026latexcitation,
+  author       = {Samad, Md Abdus},
+  title        = {LaTeX Citation Key Replacement: PowerShell Script to Convert Numeric Citations},
+  year         = {2026},
+  month        = jan,
+  howpublished = {ScholarsNote},
+  url          = {https://www.scholarsnote.org/posts/latex-citation-automation-blog/},
+  doi          = {10.59350/XXXXXXXX-XXXXX},
+  note         = {Accessed: 2026-01-01}
+}
 ```
-
-**"Nothing got replaced"**
-Check that your citations actually use the `\cite{number}` format. Also make sure there are no extra spaces inside the braces — `\cite{ 1 }` won't match.
-
-**"Warning: No mapping for citation X"**
-You're using citation number X in your document but haven't added it to the `$citationMap`. Either add it or leave it — the script won't break anything.
-
-## Bonus: Combining Multiple Citations
-
-The script handles back-to-back citations just fine:
-
-<details>
-<summary><strong>Click to see an example</strong></summary>
-
-<strong>Before:</strong>
-<pre><code>Multiple studies \cite{1}\cite{2} have shown...</code></pre>
-
-<strong>After:</strong>
-<pre><code>Multiple studies \cite{smith2023keyword}\cite{doe2024analysis} have shown...</code></pre>
-
-<strong>Quick tip:</strong> After running the script, you can manually merge these into a single cite command:
-<pre><code>Multiple studies \cite{smith2023keyword,doe2024analysis} have shown...</code></pre>
-
-This gives you a cleaner output — [1,2] instead of [1][2].
-
-</details>
-
-## Wrapping Up
-
-Look, nobody enjoys spending their afternoon doing find-and-replace on citation keys. This script handles it in seconds, and once you've set up the mapping, you can reuse it anytime you work with the same bibliography.
-
-Give it a try on your next paper — I think you'll be surprised how much time it saves.
-
----
-
-## Ready to Use It?
-
-1. [Download replace-citations.ps1](/assets/files/replace-citations.ps1)
-2. Update the `$citationMap` with your own citations
-3. Run it on your `.tex` file
-4. That's it — you're done
-
----
-
-> **Tip:** Take a few minutes to get your citation mapping right. It's worth the upfront effort — it'll save you hours down the road.
-{: .prompt-tip }
-
-> **Warning:** Always keep a backup of your original `.tex` file before running any script on it, especially if it's your final thesis or dissertation!
-{: .prompt-warning }
-
----
-
-**Got questions or ran into something unexpected?** Drop a comment below — happy to help.
