@@ -5,7 +5,6 @@ categories: [LaTeX, Tools, Research]
 tags: [latex, bash, academic-writing, productivity, script]
 description: "A robust bash script that audits LaTeX documents to find unreferenced figures, tables, equations, and citation issues while ignoring commented code."
 author: Md Abdus Samad
-doi: "10.59350/XXXXXXXX-XXXXX"
 ---
 
 When preparing research manuscripts, it is common to accumulate unused labels, orphaned citations, and commented-out content. This bash script provides a comprehensive audit of your LaTeX document, identifying unreferenced figures, tables, equations, and sections, unused bibliography entries, and missing citations -- all while properly ignoring commented lines. The script preserves the sequence in which labels appear in your document, making it easier to locate and manage them.
@@ -618,7 +617,7 @@ rg -oP '\\label\{tab:\K[^}]+' "$TEXFILE"
 
 ## How to Cite
 
-> Samad, M. A. (2026). LaTeX reference checker: Bash script to find unused labels and missing citations. *ScholarsNote*. <https://doi.org/10.59350/XXXXXXXX-XXXXX>
+> Samad, M. A. (2026). LaTeX reference checker: Bash script to find unused labels and missing citations. *ScholarsNote*. <https://www.scholarsnote.org/posts/latex-label-prefix-guide-blog/>
 
 **BibTeX:**
 
@@ -631,7 +630,6 @@ rg -oP '\\label\{tab:\K[^}]+' "$TEXFILE"
   month        = jan,
   howpublished = {ScholarsNote},
   url          = {https://www.scholarsnote.org/posts/latex-label-prefix-guide-blog/},
-  doi          = {10.59350/XXXXXXXX-XXXXX},
   note         = {Accessed: 2026-01-03}
 }
 ```

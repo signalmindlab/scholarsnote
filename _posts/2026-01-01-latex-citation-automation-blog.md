@@ -5,7 +5,6 @@ date: 2026-01-01 10:00:00 +0900
 categories: [Research, LaTeX]
 tags: [latex, powershell, automation, academic-writing, bibliography-management, citation-management]
 author: Md Abdus Samad
-doi: "10.59350/XXXXXXXX-XXXXX"
 pin: false
 ---
 
@@ -228,7 +227,7 @@ The file browser was cancelled. Re-run and select a file when the dialog opens.
 
 ## How to Cite
 
-> Samad, M. A. (2026). LaTeX citation key replacement: PowerShell script to convert numeric citations. *ScholarsNote*. <https://doi.org/10.59350/XXXXXXXX-XXXXX>
+> Samad, M. A. (2026). LaTeX citation key replacement: PowerShell script to convert numeric citations. *ScholarsNote*. <https://www.scholarsnote.org/posts/latex-citation-automation-blog/>
 
 **BibTeX:**
 
@@ -240,9 +239,7 @@ The file browser was cancelled. Re-run and select a file when the dialog opens.
   year         = {2026},
   month        = jan,
   howpublished = {ScholarsNote},
-  url          = {https://www.scholarsnote.org/posts/
-                  latex-citation-automation-blog/},
-  doi          = {10.59350/XXXXXXXX-XXXXX},
+  url          = {https://www.scholarsnote.org/posts/latex-citation-automation-blog/},
   note         = {Accessed: 2026-01-01}
 }
 ```
