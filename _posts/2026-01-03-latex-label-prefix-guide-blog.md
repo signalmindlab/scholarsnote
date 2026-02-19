@@ -8,7 +8,7 @@ author: Md Abdus Samad
 doi: "10.59350/XXXXXXXX-XXXXX"
 ---
 
-When preparing research manuscripts, it is common to accumulate unused labels, orphaned citations, and commented-out content. This bash script provides a comprehensive audit of your LaTeX document, identifying unreferenced figures, tables, and equations, unused bibliography entries, and missing citations -- all while properly ignoring commented lines. The script preserves the sequence in which labels appear in your document, making it easier to locate and manage them.
+When preparing research manuscripts, it is common to accumulate unused labels, orphaned citations, and commented-out content. This bash script provides a comprehensive audit of your LaTeX document, identifying unreferenced figures, tables, equations, and sections, unused bibliography entries, and missing citations -- all while properly ignoring commented lines. The script preserves the sequence in which labels appear in your document, making it easier to locate and manage them.
 
 ## The Problem
 
@@ -29,8 +29,11 @@ Manual checking across 50+ pages with multiple revisions becomes impractical.
 
 - **Comment-aware**: Ignores both full-line and inline comments
 - **Sequence-preserving**: Shows labels in document order
-- **Comprehensive**: Checks figures, tables, equations, and citations
-- **Multiple reference styles**: Supports `\ref`, `\autoref`, and `\eqref`
+- **Comprehensive**: Checks figures, tables, equations, sections, and citations
+- **All major reference commands**: Supports `\ref`, `\autoref`, `\Autoref`, `\cref`, `\Cref`, `\vref`, `\pageref`, `\nameref`, `\labelcref`, and `\eqref`
+- **Multi-key refs**: Handles `\cref{fig:a,fig:b}` style calls (cleveref)
+- **biblatex support**: Detects `\addbibresource{}` in addition to `\bibliography{}`
+- **Broad citation coverage**: Recognises `\cite`, `\citep`, `\citet`, `\citealt`, `\citealp`, `\citeauthor`, `\citeyear`, `\parencite`, `\textcite`, `\footcite`, `\autocite`, and starred variants
 - **Lightweight**: Pure bash, no dependencies
 - **Fast**: Processes typical manuscripts in less than one second
 
@@ -38,133 +41,15 @@ Manual checking across 50+ pages with multiple revisions becomes impractical.
 
 Follow these three simple steps to start using the reference checker:
 
-1. **Save the script** - Copy the code below and save it as `check_latex_refs.sh` in your LaTeX project directory
+1. **Download the script** - Download `check_latex_refs.sh` (link below) and save it in your LaTeX project directory
 2. **Make it executable** - Run `chmod +x check_latex_refs.sh` in your terminal
 3. **Run the checker** - Execute `./check_latex_refs.sh manuscript.tex` (replace with your filename)
 
-### Step 1: Create the Script
+### Step 1: Download the Script
 
-Copy the following code and save it as `check_latex_refs.sh` in the same directory as your LaTeX file:
+[**Download check_latex_refs.sh**](/assets/files/check_latex_refs.sh){: .btn .btn-primary }
 
-```bash
-#!/bin/bash
-
-if [ $# -eq 0 ]; then
-    echo "Usage: $0 <latex_file.tex>"
-    exit 1
-fi
-
-TEXFILE=$1
-
-# Remove comments in two steps:
-# Step 1: Remove lines that start with % (including whitespace before %)
-# Step 2: Remove inline comments (everything after % that's not \%)
-TEXCONTENT=$(grep -v '^\s*%' "$TEXFILE" | sed 's/\([^\\]\)%.*$/\1/')
-
-echo "Checking references in: $TEXFILE"
-echo "========================================"
-
-# Tables (preserving order, excluding comments)
-echo -e "\n=== TABLES ==="
-TAB_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{tab:\K[^}]+')
-TAB_LABELS_UNIQ=$(echo "$TAB_LABELS" | awk '!seen[$0]++')
-# Catches both \ref and \autoref
-TAB_REFS=$(echo "$TEXCONTENT" | grep -oP '\\(auto)?ref\{tab:\K[^}]+' | awk '!seen[$0]++')
-TAB_COUNT=$(echo "$TAB_LABELS_UNIQ" | grep -v '^$' | wc -l)
-REF_COUNT=$(echo "$TAB_REFS" | grep -v '^$' | wc -l)
-
-echo "Total labels: $TAB_COUNT"
-echo "Total refs: $REF_COUNT"
-echo "Unreferenced tables:"
-
-while IFS= read -r label; do
-    if ! echo "$TAB_REFS" | grep -qx "$label"; then
-        echo "  tab:$label"
-    fi
-done <<< "$TAB_LABELS_UNIQ"
-
-# Figures (preserving order, excluding comments)
-echo -e "\n=== FIGURES ==="
-FIG_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{fig:\K[^}]+')
-FIG_LABELS_UNIQ=$(echo "$FIG_LABELS" | awk '!seen[$0]++')
-# Catches both \ref and \autoref
-FIG_REFS=$(echo "$TEXCONTENT" | grep -oP '\\(auto)?ref\{fig:\K[^}]+' | awk '!seen[$0]++')
-FIG_COUNT=$(echo "$FIG_LABELS_UNIQ" | grep -v '^$' | wc -l)
-FIGREF_COUNT=$(echo "$FIG_REFS" | grep -v '^$' | wc -l)
-
-echo "Total labels: $FIG_COUNT"
-echo "Total refs: $FIGREF_COUNT"
-echo "Unreferenced figures:"
-
-while IFS= read -r label; do
-    if ! echo "$FIG_REFS" | grep -qx "$label"; then
-        echo "  fig:$label"
-    fi
-done <<< "$FIG_LABELS_UNIQ"
-
-# Equations (preserving order, excluding comments)
-echo -e "\n=== EQUATIONS ==="
-EQ_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{eq:\K[^}]+')
-EQ_LABELS_UNIQ=$(echo "$EQ_LABELS" | awk '!seen[$0]++')
-# Catches \ref, \autoref, and \eqref
-EQ_REFS=$(echo "$TEXCONTENT" | grep -oP '\\((auto|eq))?ref\{eq:\K[^}]+' | awk '!seen[$0]++')
-EQ_COUNT=$(echo "$EQ_LABELS_UNIQ" | grep -v '^$' | wc -l)
-EQREF_COUNT=$(echo "$EQ_REFS" | grep -v '^$' | wc -l)
-
-echo "Total labels: $EQ_COUNT"
-echo "Total refs: $EQREF_COUNT"
-echo "Unreferenced equations:"
-
-while IFS= read -r label; do
-    if ! echo "$EQ_REFS" | grep -qx "$label"; then
-        echo "  eq:$label"
-    fi
-done <<< "$EQ_LABELS_UNIQ"
-
-# Citations (excluding comments)
-echo -e "\n=== CITATIONS ==="
-BIBFILE=$(echo "$TEXCONTENT" | grep -oP '\\bibliography\{\K[^}]+' | head -1)
-
-if [ -n "$BIBFILE" ]; then
-    [[ "$BIBFILE" != *.bib ]] && BIBFILE="${BIBFILE}.bib"
-
-    if [ -f "$BIBFILE" ]; then
-        echo "Using bibliography file: $BIBFILE"
-
-        BIB_ENTRIES=$(grep -oP '@\w+\{\K[^,]+' "$BIBFILE" | awk '!seen[$0]++')
-        CITATIONS=$(echo "$TEXCONTENT" | grep -oP '\\cite[tp]?\{\K[^}]+' | tr ',' '\n' | sed 's/^[[:space:]]*//' | awk '!seen[$0]++')
-
-        BIB_COUNT=$(echo "$BIB_ENTRIES" | grep -v '^$' | wc -l)
-        CITE_TOTAL=$(echo "$TEXCONTENT" | grep -oP '\\cite[tp]?\{[^}]+\}' | wc -l)
-        CITE_UNIQ=$(echo "$CITATIONS" | grep -v '^$' | wc -l)
-
-        echo "Total bib entries: $BIB_COUNT"
-        echo "Total citation commands: $CITE_TOTAL"
-        echo "Unique cited keys: $CITE_UNIQ"
-
-        echo "Uncited bibliography entries:"
-        while IFS= read -r entry; do
-            if ! echo "$CITATIONS" | grep -qx "$entry"; then
-                echo "  $entry"
-            fi
-        done <<< "$BIB_ENTRIES"
-
-        echo "Missing bibliography entries (cited but not in .bib):"
-        while IFS= read -r cite; do
-            if ! echo "$BIB_ENTRIES" | grep -qx "$cite"; then
-                echo "  $cite"
-            fi
-        done <<< "$CITATIONS"
-    else
-        echo "Bibliography file not found: $BIBFILE"
-    fi
-else
-    echo "No bibliography file found in document"
-fi
-
-echo -e "\n========================================"
-echo "Check complete!"
-```
+Save the file as `check_latex_refs.sh` in the same directory as your LaTeX file.
 
 ### Step 2: Make it Executable
 
@@ -196,7 +81,7 @@ Checking references in: paper.tex
 
 === TABLES ===
 Total labels: 11
-Total refs: 8
+Total refs:   8
 Unreferenced tables:
   tab:appendix_data
   tab:extra_results
@@ -204,22 +89,27 @@ Unreferenced tables:
 
 === FIGURES ===
 Total labels: 6
-Total refs: 6
+Total refs:   6
 Unreferenced figures:
 
 === EQUATIONS ===
 Total labels: 15
-Total refs: 12
+Total refs:   12
 Unreferenced equations:
   eq:supplementary
   eq:variance
   eq:alt_form
 
+=== SECTIONS ===
+Total labels: 4
+Total refs:   3
+Unreferenced sections:
+  sec:future_work
+
 === CITATIONS ===
 Using bibliography file: references.bib
-Total bib entries: 45
-Total citation commands: 52
-Unique cited keys: 38
+Total bib entries:  45
+Unique cited keys:  38
 Uncited bibliography entries:
   smith2020old
   jones2019unused
@@ -231,7 +121,7 @@ Missing bibliography entries (cited but not in .bib):
 Check complete!
 ```
 
-The script detects references made with `\ref{fig:one}`, `\autoref{tab:results}`, or `\eqref{eq:main}` -- all are counted correctly.
+The script detects references made with `\ref{fig:one}`, `\autoref{tab:results}`, `\cref{eq:main}`, `\eqref{eq:energy}`, or even `\cref{fig:a,fig:b}` -- all are counted correctly.
 
 ## Technical Deep Dive
 
@@ -286,28 +176,51 @@ If your document has:
 
 The output shows `fig:extra` in document order (not alphabetically sorted), making it easier to locate.
 
-#### 3. Pattern Matching
+#### 3. Unified Reference Pattern
 
-Uses Perl-compatible regex with `grep -oP`:
+All reference commands are captured in one pass using a single regex, then split by prefix:
 
 ```bash
-# For tables and figures: catches both \ref and \autoref
-grep -oP '\\(auto)?ref\{tab:\K[^}]+'
-
-# For equations: catches \ref, \autoref, and \eqref
-grep -oP '\\((auto|eq))?ref\{eq:\K[^}]+'
+ALL_REFS=$(echo "$TEXCONTENT" \
+    | grep -oP '\\(auto|Auto|c|C|v|page|name|labelc|eq)?ref\{[^}]+\}' \
+    | grep -oP '\{[^}]+\}' \
+    | tr -d '{}' \
+    | tr ',' '\n' \          # split multi-key: \cref{fig:a,fig:b}
+    | sed 's/^[[:space:]]*//' \
+    | grep -v '^$' \
+    | awk '!seen[$0]++')
 ```
 
-**Breakdown:**
-- `\\(auto)?ref\{tab:` -- Match `\ref{tab:` or `\autoref{tab:`
-- `\\((auto|eq))?ref\{eq:` -- Match `\ref{eq:`, `\autoref{eq:`, or `\eqref{eq:`
-- `\K` -- Discard everything matched so far
-- `[^}]+` -- Capture everything until `}`
+Labels are then filtered per section using a helper:
+
+```bash
+refs_for_prefix() {
+    local prefix="$1"
+    echo "$ALL_REFS" | grep "^${prefix}:" | sed "s/^${prefix}://" | awk '!seen[$0]++'
+}
+```
 
 **Supported reference commands:**
-- `\ref{...}` -- Standard LaTeX reference
-- `\autoref{...}` -- Automatic reference from hyperref package
-- `\eqref{...}` -- Equation reference (for equations only)
+
+| Command | Package | Notes |
+|---------|---------|-------|
+| `\ref{...}` | Standard LaTeX | Basic cross-reference |
+| `\autoref{...}` | hyperref | Adds type name automatically |
+| `\Autoref{...}` | hyperref | Sentence-initial capitalised form |
+| `\cref{...}` | cleveref | Smart reference with type |
+| `\Cref{...}` | cleveref | Capitalised form |
+| `\vref{...}` | varioref | Adds page information |
+| `\pageref{...}` | Standard LaTeX | Page number only |
+| `\nameref{...}` | hyperref | Uses section name |
+| `\labelcref{...}` | cleveref | Label-only reference |
+| `\eqref{...}` | amsmath | Equation reference with parentheses |
+
+**Multi-key cleveref calls are handled automatically:**
+
+```latex
+% All three labels are detected as referenced:
+\cref{fig:workflow,fig:accuracy,tab:results}
+```
 
 **Examples:**
 
@@ -315,15 +228,46 @@ Labels detected:
 - `\label{tab:results}` extracts `results`
 - `\label{fig:analysis_2023}` extracts `analysis_2023`
 - `\label{eq:main_theorem}` extracts `main_theorem`
+- `\label{sec:introduction}` extracts `introduction`
 
 References detected:
-- `\ref{fig:diagram}` matches `diagram`
-- `\autoref{tab:results}` matches `results`
-- `\eqref{eq:einstein}` matches `einstein`
+- `\ref{fig:diagram}` → matches `diagram`
+- `\autoref{tab:results}` → matches `results`
+- `\Cref{fig:workflow}` → matches `workflow`
+- `\eqref{eq:einstein}` → matches `einstein`
+- `\cref{fig:a,fig:b}` → matches both `a` and `b`
 
-Not matched:
+Not matched (correctly excluded):
 - `% \label{tab:old}` (filtered by comment removal)
-- `\label{sec:intro}` (different prefix -- use section extension)
+
+#### 4. Citation Coverage
+
+The citation section captures all common natbib and biblatex commands, including multi-key calls:
+
+```bash
+CITATIONS=$(echo "$TEXCONTENT" \
+    | grep -oP '\\cite(p|t|alt|alp|author|year|yearpar|num|s)?\*?\{[^}]+\}|\\(parencite|textcite|footcite|autocite)\*?\{[^}]+\}' \
+    | grep -oP '\{[^}]+\}' \
+    | tr -d '{}' \
+    | tr ',' '\n' \
+    | ...)
+```
+
+**Supported citation commands:**
+
+| Command | Package |
+|---------|---------|
+| `\cite`, `\citep`, `\citet` | natbib |
+| `\citealt`, `\citealp` | natbib |
+| `\citeauthor`, `\citeyear`, `\citeyearpar` | natbib |
+| `\citenum`, `\cites` | natbib / misc |
+| `\parencite`, `\textcite` | biblatex |
+| `\footcite`, `\autocite` | biblatex |
+| Starred variants (`\citep*` etc.) | natbib |
+
+Bibliography detection supports both:
+- `\bibliography{references}` (natbib / BibTeX)
+- `\addbibresource{references.bib}` (biblatex)
 
 ## Advanced Usage
 
@@ -475,30 +419,6 @@ Unreferenced tables:
   tab:extra_results (line 203)
 ```
 
-### Add Section Labels
-
-Add this after the equations section:
-
-```bash
-# Sections (preserving order, excluding comments)
-echo -e "\n=== SECTIONS ==="
-SEC_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{sec:\K[^}]+')
-SEC_LABELS_UNIQ=$(echo "$SEC_LABELS" | awk '!seen[$0]++')
-SEC_REFS=$(echo "$TEXCONTENT" | grep -oP '\\ref\{sec:\K[^}]+' | awk '!seen[$0]++')
-SEC_COUNT=$(echo "$SEC_LABELS_UNIQ" | grep -v '^$' | wc -l)
-SECREF_COUNT=$(echo "$SEC_REFS" | grep -v '^$' | wc -l)
-
-echo "Total section labels: $SEC_COUNT"
-echo "Total section refs: $SECREF_COUNT"
-echo "Unreferenced sections:"
-
-while IFS= read -r label; do
-    if ! echo "$SEC_REFS" | grep -qx "$label"; then
-        echo "  sec:$label"
-    fi
-done <<< "$SEC_LABELS_UNIQ"
-```
-
 ### Color Output
 
 Add ANSI color codes for better visibility:
@@ -514,9 +434,9 @@ NC='\033[0m' # No Color
 # Use in output
 echo -e "${BLUE}=== TABLES ===${NC}"
 echo "Total labels: $TAB_COUNT"
-echo "Total refs: $REF_COUNT"
+echo "Total refs:   $TABREF_COUNT"
 
-if [ "$TAB_COUNT" -eq "$REF_COUNT" ]; then
+if [ "$TAB_COUNT" -eq "$TABREF_COUNT" ]; then
     echo -e "${GREEN}All tables referenced${NC}"
 else
     echo -e "${RED}Unreferenced tables:${NC}"
@@ -548,7 +468,8 @@ echo "Type,Label,Section" > "$OUTFILE"
 # Extract and format
 grep "^  tab:" /tmp/ref_check.log | sed 's/^  /table,/' >> "$OUTFILE"
 grep "^  fig:" /tmp/ref_check.log | sed 's/^  /figure,/' >> "$OUTFILE"
-grep "^  eq:" /tmp/ref_check.log | sed 's/^  /equation,/' >> "$OUTFILE"
+grep "^  eq:"  /tmp/ref_check.log | sed 's/^  /equation,/' >> "$OUTFILE"
+grep "^  sec:" /tmp/ref_check.log | sed 's/^  /section,/' >> "$OUTFILE"
 
 echo "CSV exported to: $OUTFILE"
 ```
@@ -564,7 +485,7 @@ Add JSON export capability:
 if [ "$2" == "--json" ]; then
     # Extract data
     TAB_LABELS=$(echo "$TEXCONTENT" | grep -oP '\\label\{tab:\K[^}]+' | awk '!seen[$0]++')
-    TAB_REFS=$(echo "$TEXCONTENT" | grep -oP '\\ref\{tab:\K[^}]+' | awk '!seen[$0]++')
+    TAB_REFS=$(refs_for_prefix "tab")
 
     # Build unreferenced array
     UNREF_TABS=$(comm -23 <(echo "$TAB_LABELS" | sort) <(echo "$TAB_REFS" | sort) | \
@@ -669,7 +590,7 @@ fi
 
 | Tool | Pros | Cons | Best For |
 |------|------|------|----------|
-| **This script** | Fast, customizable, comment-aware, preserves order | Single file only | Quick audits, CI/CD |
+| **This script** | Fast, customizable, comment-aware, preserves order, broad ref/cite support | Single file only | Quick audits, CI/CD |
 | `refcheck` package | LaTeX-integrated, visual markers | Must recompile, clutters PDF | During writing |
 | `chktex` | Comprehensive linting, many checks | Verbose, complex output | Deep analysis |
 | VS Code LaTeX Workshop | Real-time, editor-integrated | Editor-specific, no batch | Active editing |
@@ -684,17 +605,17 @@ Manuscript for journal submission with 8 months of revisions:
 ```
 === TABLES ===
 Total labels: 8
-Total refs: 7
+Total refs:   7
 Unreferenced tables:
   tab:correlation_matrix
 
 === FIGURES ===
 Total labels: 12
-Total refs: 12
+Total refs:   12
 
 === EQUATIONS ===
 Total labels: 6
-Total refs: 6
+Total refs:   6
 
 === CITATIONS ===
 Total bib entries: 67
@@ -722,7 +643,7 @@ Uncited bibliography entries:
 ```
 === TABLES ===
 Total labels: 7
-Total refs: 7
+Total refs:   7
 Unreferenced tables:
 
 === CITATIONS ===
@@ -739,9 +660,7 @@ Uncited bibliography entries:
 
 1. **Single file only**: Does not traverse `\input{}` or `\include{}` commands
 2. **Standard prefixes**: Assumes `tab:`, `fig:`, `eq:`, `sec:` conventions
-3. **Reference commands**: Detects `\ref`, `\autoref`, and `\eqref` (for equations)
-4. **Citation commands**: Only detects `\cite`, `\citep`, `\citet`
-5. **Bibliography format**: Requires standard `\bibliography{}` command
+3. **Citation commands**: Does not cover every possible custom cite command
 
 ### Workarounds
 
@@ -755,21 +674,17 @@ rm combined.tex
 
 **For custom prefixes:**
 ```bash
-# Modify the grep patterns in the script
-# Change tab: to tbl:
-grep -oP '\\label\{tbl:\K[^}]+'
+# Modify the refs_for_prefix calls in the script
+# Example: change tab: to tbl:
+TAB_REFS=$(refs_for_prefix "tbl")
 ```
 
 **For additional citation commands:**
-```bash
-# Add to CITATIONS line:
-CITATIONS=$(echo "$TEXCONTENT" | grep -oP '\\cite(p|t|author|year|)?\{\K[^}]+' | ...)
-```
 
-**For biblatex:**
+Open `check_latex_refs.sh` and extend the `CITATIONS` grep pattern:
 ```bash
-# Change BIBFILE detection:
-BIBFILE=$(echo "$TEXCONTENT" | grep -oP '\\addbibresource\{\K[^}]+' | head -1)
+# Add your custom command, e.g. \mycite
+grep -oP '\\(cite...|mycite)\*?\{[^}]+\}'
 ```
 
 ## Troubleshooting
