@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd resilient LaTeX ref checker script and update post\n\n- Add check_latex_refs.sh to assets/files/ for download\n- Support \\\\autoref, \\\\Autoref, \\\\cref, \\\\Cref, \\\\vref, \\\\pageref, \\\\nameref, \\\\labelcref, \\\\eqref\n- Handle multi-key cleveref calls \\(e.g. \\\\cref{fig:a,fig:b}\\)\n- Add sections as built-in checked category\n- Broaden citation coverage \\(natbib + biblatex commands\\)\n- Detect \\\\addbibresource{} for biblatex projects\n- Replace embedded script in post with download link\n- Ignore Windows reserved ''nul'' file in .gitignore\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "WebFetch(domain:www.scholarsnote.org)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(python3:*)",
+      "Bash(awk:*)",
+      "Bash(/tmp/check_long.awk << 'AWKEOF'\nNR > 10 && length\\($0\\) > 85 {\n    if \\($0 !~ /^[|]/\\) {\n        print NR\": [\" length\\($0\\) \" chars] \" $0\n    }\n}\nAWKEOF)"
+    ]
+  }
+}
