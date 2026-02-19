@@ -14,12 +14,10 @@ When preparing research manuscripts, it is common to accumulate unused labels, o
 
 During manuscript development, you might encounter:
 
-| Issue | Example | Impact |
-|-------|---------|--------|
-| Unreferenced labels | `\label{fig:old_analysis}` never used | Clutters document, confuses reviewers |
-| Commented labels counted | `% \label{tab:removed}` still detected | False positives in checks |
-| Missing citations | `\cite{smith2023}` but not in .bib | Compilation errors |
-| Unused bibliography | References added but never cited | Inflates reference count |
+- **Unreferenced labels** — `\label{fig:old_analysis}` defined but never cited; clutters the document and confuses reviewers.
+- **Commented labels counted** — `% \label{tab:removed}` still detected by naive checks; produces false positives.
+- **Missing citations** — `\cite{smith2023}` used in the text but absent from the `.bib` file; causes compilation errors.
+- **Unused bibliography entries** — references added but never cited; inflates the reference count.
 
 Manual checking across 50+ pages with multiple revisions becomes impractical.
 
@@ -605,7 +603,8 @@ rg -oP '\\label\{tab:\K[^}]+' "$TEXFILE"
 ```bibtex
 @misc{samad2026latexrefchecker,
   author       = {Samad, Md Abdus},
-  title        = {LaTeX Reference Checker: Bash Script to Find Unused Labels and Missing Citations},
+  title        = {LaTeX Reference Checker: Bash Script to Find
+                  Unused Labels and Missing Citations},
   year         = {2026},
   month        = jan,
   howpublished = {ScholarsNote},
